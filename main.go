@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
-
 	"github.com/Ahimta/tweeters-stats-golang/config"
 	"github.com/Ahimta/tweeters-stats-golang/handlers"
 )
