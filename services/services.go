@@ -8,7 +8,7 @@ import (
 
 // TweetsService blablabla
 type TweetsService interface {
-	FetchTweeters(accessToken, accessSecret string) ([]entities.Tweeter, error)
+	FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error)
 }
 
 type tweetsService struct {
@@ -21,7 +21,7 @@ func NewTweetsService(oauthClient auth.Oauth1Client) TweetsService {
 }
 
 // FetchTweeters blablabla
-func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret string) ([]entities.Tweeter, error) {
+func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error) {
 	httpClient := _tweetsService.oauthClient.HTTPClient(accessToken, accessSecret)
 	twitterClient := twitter.NewClient(httpClient)
 	tweets, _, err := twitterClient.Timelines.HomeTimeline(&twitter.HomeTimelineParams{Count: 200})
@@ -30,9 +30,9 @@ func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret str
 		return nil, err
 	}
 
-	var tweeters []entities.Tweeter
+	tweeters := make([]*entities.Tweeter, 0, len(tweets))
 	for _, tweeter := range tweets {
-		tweeters = append(tweeters, entities.Tweeter{FullName: tweeter.User.Name, Username: tweeter.User.ScreenName})
+		tweeters = append(tweeters, &entities.Tweeter{FullName: tweeter.User.Name, Username: tweeter.User.ScreenName})
 	}
 
 	return tweeters, nil
