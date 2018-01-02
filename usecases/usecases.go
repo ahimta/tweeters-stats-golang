@@ -39,6 +39,10 @@ func (xs tweeterStatsSort) Less(i, j int) bool {
 
 // GetTweetersStats blablabla
 func GetTweetersStats(tweetsService services.TweetsService, accessToken, accessSecret string) ([]*entities.TweeterStats, error) {
+	if accessToken == "" || accessSecret == "" {
+		return nil, errors.New("usecases: accessToken or accessSecret missing -_-")
+	}
+
 	tweeters, err := tweetsService.FetchTweeters(accessToken, accessSecret)
 
 	if err != nil {
@@ -75,8 +79,8 @@ func GetTweetersStats(tweetsService services.TweetsService, accessToken, accessS
 
 // HandleOauth1Callback blablabla
 func HandleOauth1Callback(oauthClient auth.Oauth1Client, requestSecret string, r *http.Request) (*HandleOauth1CallbackResult, error) {
-	if requestSecret == "" {
-		return nil, errors.New("tweeters-stats: requestSecret missing -_-")
+	if requestSecret == "" || r == nil {
+		return nil, errors.New("usecases: requestSecret or request missing -_-")
 	}
 
 	requestToken, verifier, err := oauthClient.ParseAuthorizationCallback(r)
