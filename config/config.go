@@ -14,7 +14,17 @@ type Config struct {
 
 var config *Config
 
-func init() {
+// NewConfig blablabla
+func NewConfig(callbackURL, consumerKey, consumerSecret, port string) *Config {
+	return &Config{callbackURL, consumerKey, consumerSecret, port}
+}
+
+// GetConfig blablabla
+func GetConfig() *Config {
+	if config != nil {
+		return config
+	}
+
 	consumerKey := os.Getenv("CONSUMER_KEY")
 	consumerSecret := os.Getenv("CONSUMER_SECRET")
 	callbackURL := os.Getenv("CALLBACK_URL")
@@ -29,14 +39,5 @@ func init() {
 	}
 
 	config = NewConfig(callbackURL, consumerKey, consumerSecret, port)
-}
-
-// NewConfig blablabla
-func NewConfig(callbackURL, consumerKey, consumerSecret, port string) *Config {
-	return &Config{callbackURL, consumerKey, consumerSecret, port}
-}
-
-// GetConfig blablabla
-func GetConfig() *Config {
 	return config
 }
