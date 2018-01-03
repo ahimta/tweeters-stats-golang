@@ -22,7 +22,12 @@ func NewTweetsService(oauthClient auth.Oauth1Client) TweetsService {
 
 // FetchTweeters blablabla
 func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error) {
-	httpClient := _tweetsService.oauthClient.HTTPClient(accessToken, accessSecret)
+	httpClient, err := _tweetsService.oauthClient.HTTPClient(accessToken, accessSecret)
+
+	if err != nil {
+		return nil, err
+	}
+
 	twitterClient := twitter.NewClient(httpClient)
 	tweets, _, err := twitterClient.Timelines.HomeTimeline(&twitter.HomeTimelineParams{Count: 200})
 

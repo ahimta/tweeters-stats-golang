@@ -50,8 +50,8 @@ func (_oauthClient *oauthClient) AuthorizationURL(requestToken string) (*url.URL
 	return _oauthClient.url, _oauthClient.authorizationURLError
 }
 
-func (_oauthClient *oauthClient) HTTPClient(accessToken, accessSecret string) *http.Client {
-	return _oauthClient.client
+func (_oauthClient *oauthClient) HTTPClient(accessToken, accessSecret string) (*http.Client, error) {
+	return _oauthClient.client, nil
 }
 
 func (_oauthClient *oauthClient) RequestToken() (requestToken, requestSecret string, err error) {

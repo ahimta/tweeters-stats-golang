@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
 	"github.com/Ahimta/tweeters-stats-golang/config"
@@ -16,7 +17,13 @@ func hello(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	c := config.GetConfig()
-	oauthClient := auth.NewOauth1Client(c)
+	oauthClient, err := auth.NewOauth1Client(c)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", hello)
