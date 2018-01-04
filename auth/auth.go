@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/Ahimta/tweeters-stats-golang/config"
 	"github.com/dghubble/oauth1"
 )
 
@@ -31,15 +30,15 @@ type oauth1Client struct {
 }
 
 // NewOauth1Client blabla
-func NewOauth1Client(c *config.Config) (Oauth1Client, error) {
-	if c == nil || c.ConsumerKey == "" || c.ConsumerSecret == "" || c.CallbackURL == "" {
+func NewOauth1Client(consumerKey, consumerSecret, callbackURL string) (Oauth1Client, error) {
+	if consumerKey == "" || consumerSecret == "" || callbackURL == "" {
 		return nil, errors.New("auth: consumerKey, consumerSecret, or callbackURL is missing -_-")
 	}
 
 	config := &oauth1.Config{
-		ConsumerKey:    c.ConsumerKey,
-		ConsumerSecret: c.ConsumerSecret,
-		CallbackURL:    c.CallbackURL,
+		ConsumerKey:    consumerKey,
+		ConsumerSecret: consumerSecret,
+		CallbackURL:    callbackURL,
 		Endpoint: oauth1.Endpoint{
 			RequestTokenURL: "https://api.twitter.com/oauth/request_token",
 			AuthorizeURL:    "https://api.twitter.com/oauth/authorize",

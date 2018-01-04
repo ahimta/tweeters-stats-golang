@@ -9,25 +9,20 @@ import (
 	"testing"
 
 	"github.com/dghubble/oauth1"
-
-	"github.com/Ahimta/tweeters-stats-golang/config"
 )
 
-var validConfig, _ = config.NewConfig("consumerKey", "consumerSecret", "callbackURL", "80")
-var validClient, _ = NewOauth1Client(validConfig)
+var validClient, _ = NewOauth1Client("consumerKey", "consumerSecret", "callbackURL")
 
 func TestNewOauth1Client(t *testing.T) {
 	//
-	c, _ := config.NewConfig("blablabla", "blablabla", "blablabla", "80")
-	_, err := NewOauth1Client(c)
+	client, err := NewOauth1Client("blablabla", "blablabla", "blablabla")
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
 	//
-	c, _ = config.NewConfig("blablabla", "", "blablabla", "")
-	client, err := NewOauth1Client(c)
+	client, err = NewOauth1Client("blablabla", "", "blablabla")
 
 	if err == nil || client != nil {
 		t.Errorf("should return an error when a required config value is missing!")

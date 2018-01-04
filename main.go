@@ -16,8 +16,14 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	c, _ := config.NewConfig(os.Getenv("CONSUMER_KEY"), os.Getenv("CONSUMER_SECRET"), os.Getenv("CALLBACK_URL"), os.Getenv("PORT"))
-	oauthClient, err := auth.NewOauth1Client(c)
+	c, err := config.NewConfig(os.Getenv("CONSUMER_KEY"), os.Getenv("CONSUMER_SECRET"), os.Getenv("CALLBACK_URL"), os.Getenv("PORT"))
+
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	oauthClient, err := auth.NewOauth1Client(c.ConsumerKey, c.ConsumerSecret, c.CallbackURL)
 
 	if err != nil {
 		fmt.Println(err.Error())
