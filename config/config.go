@@ -1,43 +1,24 @@
 package config
 
 import (
-	"os"
+	"errors"
 )
 
 // Config blablabla
 type Config struct {
-	CallbackURL    string
 	ConsumerKey    string
 	ConsumerSecret string
+	CallbackURL    string
 	Port           string
 }
 
 var config *Config
 
 // NewConfig blablabla
-func NewConfig(callbackURL, consumerKey, consumerSecret, port string) *Config {
-	return &Config{callbackURL, consumerKey, consumerSecret, port}
-}
-
-// GetConfig blablabla
-func GetConfig() *Config {
-	if config != nil {
-		return config
+func NewConfig(consumerKey, consumerSecret, callbackURL, port string) (*Config, error) {
+	if consumerKey == "" || consumerSecret == "" || callbackURL == "" || port == "" {
+		return nil, errors.New("config: missing consumerKey, consumerSecret, or callbackURL -_-")
 	}
 
-	consumerKey := os.Getenv("CONSUMER_KEY")
-	consumerSecret := os.Getenv("CONSUMER_SECRET")
-	callbackURL := os.Getenv("CALLBACK_URL")
-	port := os.Getenv("PORT")
-
-	if consumerKey == "" || consumerSecret == "" || callbackURL == "" {
-		panic("Missing CONSUMER_KEY or CONSUMER_SECRET or CALLBACK_URL environment variables -_-!")
-	}
-
-	if port == "" {
-		port = "8080"
-	}
-
-	config = NewConfig(callbackURL, consumerKey, consumerSecret, port)
-	return config
+	return &Config{consumerKey, consumerSecret, callbackURL, port}, nil
 }

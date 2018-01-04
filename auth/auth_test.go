@@ -13,19 +13,21 @@ import (
 	"github.com/Ahimta/tweeters-stats-golang/config"
 )
 
-var validConfig = config.NewConfig("consumerKey", "consumerSecret", "callbackURL", "")
+var validConfig, _ = config.NewConfig("consumerKey", "consumerSecret", "callbackURL", "80")
 var validClient, _ = NewOauth1Client(validConfig)
 
 func TestNewOauth1Client(t *testing.T) {
 	//
-	_, err := NewOauth1Client(config.NewConfig("blablabla", "blablabla", "blablabla", ""))
+	c, _ := config.NewConfig("blablabla", "blablabla", "blablabla", "")
+	_, err := NewOauth1Client(c)
 
 	if err != nil {
 		t.Errorf("Whaaat!")
 	}
 
 	//
-	client, err := NewOauth1Client(config.NewConfig("blablabla", "", "blablabla", ""))
+	c, _ = config.NewConfig("blablabla", "", "blablabla", "")
+	client, err := NewOauth1Client(c)
 
 	if err == nil || client != nil {
 		t.Errorf("should return an error when a required config value is missing!")

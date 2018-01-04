@@ -16,7 +16,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	c := config.GetConfig()
+	c, _ := config.NewConfig(os.Getenv("CONSUMER_KEY"), os.Getenv("CONSUMER_SECRET"), os.Getenv("CALLBACK_URL"), os.Getenv("PORT"))
 	oauthClient, err := auth.NewOauth1Client(c)
 
 	if err != nil {

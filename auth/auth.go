@@ -32,7 +32,7 @@ type oauth1Client struct {
 
 // NewOauth1Client blabla
 func NewOauth1Client(c *config.Config) (Oauth1Client, error) {
-	if c.ConsumerKey == "" || c.ConsumerSecret == "" || c.CallbackURL == "" {
+	if c == nil || c.ConsumerKey == "" || c.ConsumerSecret == "" || c.CallbackURL == "" {
 		return nil, errors.New("auth: consumerKey, consumerSecret, or callbackURL is missing -_-")
 	}
 
