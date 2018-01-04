@@ -18,11 +18,11 @@ var validClient, _ = NewOauth1Client(validConfig)
 
 func TestNewOauth1Client(t *testing.T) {
 	//
-	c, _ := config.NewConfig("blablabla", "blablabla", "blablabla", "")
+	c, _ := config.NewConfig("blablabla", "blablabla", "blablabla", "80")
 	_, err := NewOauth1Client(c)
 
 	if err != nil {
-		t.Errorf("Whaaat!")
+		t.Errorf(err.Error())
 	}
 
 	//
