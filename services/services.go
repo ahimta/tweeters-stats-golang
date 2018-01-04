@@ -1,6 +1,8 @@
 package services
 
 import (
+	"net/http"
+
 	"github.com/Ahimta/tweeters-stats-golang/auth"
 	"github.com/Ahimta/tweeters-stats-golang/entities"
 	"github.com/dghubble/go-twitter/twitter"
@@ -12,17 +14,17 @@ type TweetsService interface {
 }
 
 type tweetsService struct {
-	oauthClient auth.Oauth1Client
+	httpClientImpl func(accessToken, accessSecret string) (*http.Client, error)
 }
 
 // NewTweetsService blablabla
 func NewTweetsService(oauthClient auth.Oauth1Client) TweetsService {
-	return &tweetsService{oauthClient}
+	return &tweetsService{oauthClient.HTTPClient}
 }
 
 // FetchTweeters blablabla
 func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error) {
-	httpClient, err := _tweetsService.oauthClient.HTTPClient(accessToken, accessSecret)
+	httpClient, err := _tweetsService.httpClientImpl(accessToken, accessSecret)
 
 	if err != nil {
 		return nil, err
