@@ -73,12 +73,12 @@ type getTweetersStatsResponse struct {
 }
 
 // GetTweetersStatsHandlerFactory blablabla
-func GetTweetersStatsHandlerFactory(getTweetersStatsUsecase getTweetersStatsUsecaseFunc, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
+func GetTweetersStatsHandlerFactory(getTweetersStatsUsecase getTweetersStatsUsecaseFunc, tweetsService services.TweetsService) func(http.ResponseWriter, *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		accessToken := getCookieValue(r, "accessToken")
 		accessSecret := getCookieValue(r, "accessSecret")
-		stats, err := getTweetersStatsUsecase(services.NewTweetsService(oauthClient), accessToken, accessSecret)
+		stats, err := getTweetersStatsUsecase(tweetsService, accessToken, accessSecret)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
