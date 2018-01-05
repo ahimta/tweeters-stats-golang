@@ -16,7 +16,7 @@ type handleOauth1CallbackUsecaseFunc func(oauthClient auth.Oauth1Client, request
 type getTweetersStatsUsecaseFunc func(tweetsService services.TweetsService, accessToken, accessSecret string) ([]*entities.TweeterStats, error)
 
 // LoginHandlerFactory blablabla
-func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
+func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1Client) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		oauthLoginResult, err := loginUsecase(oauthClient)
@@ -39,7 +39,7 @@ func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1C
 }
 
 // OauthTwitterHandlerFactory blablabla
-func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
+func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc, oauthClient auth.Oauth1Client) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestSecret := getCookieValue(r, "oauthRequestSecret")
@@ -73,7 +73,7 @@ type getTweetersStatsResponse struct {
 }
 
 // GetTweetersStatsHandlerFactory blablabla
-func GetTweetersStatsHandlerFactory(getTweetersStatsUsecase getTweetersStatsUsecaseFunc, tweetsService services.TweetsService) func(http.ResponseWriter, *http.Request) {
+func GetTweetersStatsHandlerFactory(getTweetersStatsUsecase getTweetersStatsUsecaseFunc, tweetsService services.TweetsService) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		accessToken := getCookieValue(r, "accessToken")
