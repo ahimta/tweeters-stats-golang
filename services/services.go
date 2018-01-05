@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
@@ -14,24 +15,28 @@ type TweetsService interface {
 }
 
 type tweetsService struct {
+	getTweetsImpl  func(httpClient *http.Client) ([]twitter.Tweet, error)
 	httpClientImpl func(accessToken, accessSecret string) (*http.Client, error)
 }
 
 // NewTweetsService blablabla
 func NewTweetsService(oauthClient auth.Oauth1Client) TweetsService {
-	return &tweetsService{oauthClient.HTTPClient}
+	return &tweetsService{getTweets, oauthClient.HTTPClient}
 }
 
 // FetchTweeters blablabla
 func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error) {
+	if accessToken == "" || accessSecret == "" {
+		return nil, errors.New("services: missing accessToken or accessSecret")
+	}
+
 	httpClient, err := _tweetsService.httpClientImpl(accessToken, accessSecret)
 
 	if err != nil {
 		return nil, err
 	}
 
-	twitterClient := twitter.NewClient(httpClient)
-	tweets, _, err := twitterClient.Timelines.HomeTimeline(&twitter.HomeTimelineParams{Count: 200})
+	tweets, err := _tweetsService.getTweetsImpl(httpClient)
 
 	if err != nil {
 		return nil, err
@@ -43,4 +48,15 @@ func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret str
 	}
 
 	return tweeters, nil
+}
+
+func getTweets(httpClient *http.Client) ([]twitter.Tweet, error) {
+	twitterClient := twitter.NewClient(httpClient)
+	tweets, _, err := twitterClient.Timelines.HomeTimeline(&twitter.HomeTimelineParams{Count: 200})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tweets, nil
 }
