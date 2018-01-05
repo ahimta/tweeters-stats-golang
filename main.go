@@ -9,6 +9,7 @@ import (
 	"github.com/Ahimta/tweeters-stats-golang/auth"
 	"github.com/Ahimta/tweeters-stats-golang/config"
 	"github.com/Ahimta/tweeters-stats-golang/handlers"
+	"github.com/Ahimta/tweeters-stats-golang/usecases"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -33,9 +34,9 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", hello)
-	mux.HandleFunc("/login/twitter", handlers.LoginHandlerFactory(c, oauthClient))
-	mux.HandleFunc("/oauth/twitter/callback", handlers.OauthTwitterHandlerFactory(c, oauthClient))
-	mux.HandleFunc("/tweeters-stats", handlers.GetTweetersStatsHandlerFactory(c, oauthClient))
+	mux.HandleFunc("/login/twitter", handlers.LoginHandlerFactory(usecases.Login, oauthClient))
+	mux.HandleFunc("/oauth/twitter/callback", handlers.OauthTwitterHandlerFactory(usecases.HandleOauth1Callback, oauthClient))
+	mux.HandleFunc("/tweeters-stats", handlers.GetTweetersStatsHandlerFactory(usecases.GetTweetersStats, oauthClient))
 
 	fmt.Printf("Server running on http://localhost:%s\n", c.Port)
 	http.ListenAndServe(fmt.Sprintf(":%s", c.Port), mux)

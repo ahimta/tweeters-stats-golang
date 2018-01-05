@@ -6,17 +6,20 @@ import (
 	"net/http"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
-	"github.com/Ahimta/tweeters-stats-golang/config"
 	"github.com/Ahimta/tweeters-stats-golang/entities"
 	"github.com/Ahimta/tweeters-stats-golang/services"
 	"github.com/Ahimta/tweeters-stats-golang/usecases"
 )
 
+type loginUsecaseFunc func(client auth.Oauth1Client) (*usecases.OauthLoginResult, error)
+type handleOauth1CallbackUsecaseFunc func(oauthClient auth.Oauth1Client, requestSecret string, r *http.Request) (*usecases.HandleOauth1CallbackResult, error)
+type getTweetersStatsUsecaseFunc func(tweetsService services.TweetsService, accessToken, accessSecret string) ([]*entities.TweeterStats, error)
+
 // LoginHandlerFactory blablabla
-func LoginHandlerFactory(c *config.Config, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
+func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		oauthLoginResult, err := usecases.Login(oauthClient)
+		oauthLoginResult, err := loginUsecase(oauthClient)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -36,11 +39,11 @@ func LoginHandlerFactory(c *config.Config, oauthClient auth.Oauth1Client) func(h
 }
 
 // OauthTwitterHandlerFactory blablabla
-func OauthTwitterHandlerFactory(c *config.Config, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
+func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestSecret := getCookieValue(r, "oauthRequestSecret")
-		handleOauthResult, err := usecases.HandleOauth1Callback(oauthClient, requestSecret, r)
+		handleOauthResult, err := handleOauth1CallbackUsecase(oauthClient, requestSecret, r)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -70,12 +73,12 @@ type getTweetersStatsResponse struct {
 }
 
 // GetTweetersStatsHandlerFactory blablabla
-func GetTweetersStatsHandlerFactory(c *config.Config, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
+func GetTweetersStatsHandlerFactory(getTweetersStatsUsecase getTweetersStatsUsecaseFunc, oauthClient auth.Oauth1Client) func(http.ResponseWriter, *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		accessToken := getCookieValue(r, "accessToken")
 		accessSecret := getCookieValue(r, "accessSecret")
-		stats, err := usecases.GetTweetersStats(services.NewTweetsService(oauthClient), accessToken, accessSecret)
+		stats, err := getTweetersStatsUsecase(services.NewTweetsService(oauthClient), accessToken, accessSecret)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
