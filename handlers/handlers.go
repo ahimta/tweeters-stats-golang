@@ -22,9 +22,8 @@ func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1C
 		oauthLoginResult, err := loginUsecase(oauthClient)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Println(err)
-			w.Write([]byte("500 - oops"))
+			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 
@@ -46,9 +45,8 @@ func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1Callback
 		handleOauthResult, err := handleOauth1CallbackUsecase(oauthClient, requestSecret, r)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Println(err)
-			w.Write([]byte("500 - oops"))
+			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 
@@ -68,7 +66,8 @@ func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1Callback
 	}
 }
 
-type getTweetersStatsResponse struct {
+// GetTweetersStatsResponse blablabla
+type GetTweetersStatsResponse struct {
 	Data []*entities.TweeterStats `json:"data"`
 }
 
@@ -81,13 +80,12 @@ func GetTweetersStatsHandlerFactory(getTweetersStatsUsecase getTweetersStatsUsec
 		stats, err := getTweetersStatsUsecase(tweetsService, accessToken, accessSecret)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Println(err)
-			w.Write([]byte("500 - oops"))
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		json.NewEncoder(w).Encode(&getTweetersStatsResponse{stats})
+		json.NewEncoder(w).Encode(&GetTweetersStatsResponse{stats})
 	}
 }
 
