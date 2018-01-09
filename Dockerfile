@@ -5,8 +5,10 @@ LABEL Name="tweeters-stats-golang"
 COPY . /go/src/github.com/Ahimta/tweeters-stats-golang
 WORKDIR /go/src/github.com/Ahimta/tweeters-stats-golang
 
-RUN go get -u github.com/golang/dep/cmd/dep
-RUN go get github.com/pilu/fresh
+RUN go get -u github.com/golang/dep/cmd/dep && \
+  go get -u github.com/golang/lint/golint && \
+  go get github.com/pilu/fresh
+
 RUN dep ensure
 RUN go build
 
