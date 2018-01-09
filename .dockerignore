@@ -1,0 +1,12 @@
+Dockerfile*
+docker-compose*
+.dockerignore
+.env
+
+.git
+.gitignore
+
+README.md
+LICENSE
+tmp
+.vscode
