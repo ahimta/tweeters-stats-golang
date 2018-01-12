@@ -10,8 +10,11 @@ import (
 	"time"
 )
 
-// https://httpd.apache.org/docs/2.2/logs.html#combined + execution time.
-const apacheFormatPattern = "%s - - [%s] \"%s %s %s\" %d %d \"%s\" \"%s\" %.3f\n"
+const (
+	// https://httpd.apache.org/docs/2.2/logs.html#combined + execution time.
+	apacheFormatPattern = "%s - - [%s] \"%s %s %s\" %d %d \"%s\" \"%s\" %.3f\n"
+	xForwardedFor       = "X-Forwarded-For"
+)
 
 // Apply blablabla
 func Apply(handler http.Handler, writer io.Writer) http.Handler {
@@ -38,6 +41,10 @@ func Apply(handler http.Handler, writer io.Writer) http.Handler {
 		clientIP := r.RemoteAddr
 		if colon := strings.LastIndex(clientIP, ":"); colon != -1 {
 			clientIP = clientIP[:colon]
+		}
+
+		if s := r.Header.Get(xForwardedFor); s != "" {
+			clientIP = s
 		}
 
 		referer := r.Referer()
