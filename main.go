@@ -9,6 +9,7 @@ import (
 	"github.com/Ahimta/tweeters-stats-golang/auth"
 	"github.com/Ahimta/tweeters-stats-golang/config"
 	"github.com/Ahimta/tweeters-stats-golang/handlers"
+	"github.com/Ahimta/tweeters-stats-golang/middleware"
 	"github.com/Ahimta/tweeters-stats-golang/services"
 	"github.com/Ahimta/tweeters-stats-golang/usecases"
 )
@@ -41,5 +42,5 @@ func main() {
 	mux.HandleFunc("/tweeters-stats", handlers.GetTweetersStatsHandlerFactory(usecases.GetTweetersStats, tweetsService))
 
 	fmt.Printf("Server running on http://localhost:%s\n", c.Port)
-	http.ListenAndServe(fmt.Sprintf(":%s", c.Port), mux)
+	http.ListenAndServe(fmt.Sprintf(":%s", c.Port), middleware.Apply(mux, os.Stdout))
 }
