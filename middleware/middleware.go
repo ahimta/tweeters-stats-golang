@@ -16,9 +16,14 @@ const (
 	xForwardedFor       = "X-Forwarded-For"
 )
 
-// Apply blablabla
+// Apply applies generic middlware to an http.Handler
+// currently it includes:
+// * error-handling middleware
+// * CORS middleware
+// * loggin middleware
 func Apply(handler http.Handler, writer io.Writer) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// error-handling middleware
 		defer func() {
 			r := recover()
 			var err error
@@ -38,11 +43,13 @@ func Apply(handler http.Handler, writer io.Writer) http.Handler {
 			}
 		}()
 
+		// CORS middleare
 		// @hack: to work for the Elm frontend in the development environment
 		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8000")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
 
+		// logging middleware
 		clientIP := r.RemoteAddr
 		if colon := strings.LastIndex(clientIP, ":"); colon != -1 {
 			clientIP = clientIP[:colon]
