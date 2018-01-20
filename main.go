@@ -39,6 +39,7 @@ func main() {
 	mux.HandleFunc("/", hello)
 	mux.HandleFunc("/login/twitter", handlers.LoginHandlerFactory(usecases.Login, oauthClient))
 	mux.HandleFunc("/oauth/twitter/callback", handlers.OauthTwitterHandlerFactory(usecases.HandleOauth1Callback, oauthClient))
+	mux.HandleFunc("/logout", handlers.LogoutHandlerFactory())
 	mux.HandleFunc("/tweeters-stats", handlers.GetTweetersStatsHandlerFactory(usecases.GetTweetersStats, tweetsService))
 
 	fmt.Printf("Server running on http://localhost:%s\n", c.Port)

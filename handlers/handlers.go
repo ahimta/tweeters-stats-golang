@@ -37,6 +37,30 @@ func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1C
 	}
 }
 
+// LogoutHandlerFactory blablabla
+func LogoutHandlerFactory() http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:  "oauthRequestSecret",
+			Value: "",
+			Path:  "/",
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:  "accessToken",
+			Value: "",
+			Path:  "/",
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:  "accessSecret",
+			Value: "",
+			Path:  "/",
+		})
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 // OauthTwitterHandlerFactory blablabla
 func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc, oauthClient auth.Oauth1Client) http.HandlerFunc {
 
@@ -62,7 +86,7 @@ func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1Callback
 			Path:  "/",
 		})
 
-		http.Redirect(w, r, "/tweeters-stats", http.StatusFound)
+		http.Redirect(w, r, "http://127.0.0.1:8000/Main.elm", http.StatusFound)
 	}
 }
 
