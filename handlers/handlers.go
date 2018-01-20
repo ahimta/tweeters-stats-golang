@@ -37,6 +37,11 @@ func LoginHandlerFactory(
 ) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		oauthLoginResult, err := loginUsecase(oauthClient)
 
 		if err != nil {
@@ -64,6 +69,11 @@ func LoginHandlerFactory(
 func LogoutHandlerFactory() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		http.SetCookie(w, &http.Cookie{
 			Name:  "oauthRequestSecret",
 			Value: "",
@@ -132,6 +142,11 @@ func GetTweetersStatsHandlerFactory(
 ) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
 		accessToken := getCookieValue(r, "accessToken")
 		accessSecret := getCookieValue(r, "accessSecret")
 		stats, err := getTweetersStatsUsecase(
