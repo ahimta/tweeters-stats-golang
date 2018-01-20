@@ -38,6 +38,11 @@ func Apply(handler http.Handler, writer io.Writer) http.Handler {
 			}
 		}()
 
+		// @hack: to work for the Elm frontend in the development environment
+		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8000")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+
 		clientIP := r.RemoteAddr
 		if colon := strings.LastIndex(clientIP, ":"); colon != -1 {
 			clientIP = clientIP[:colon]
