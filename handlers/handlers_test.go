@@ -180,11 +180,11 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 			}
 
 			location := rr.Header().Get("Location")
-			if location != "/tweeters-stats" {
+			if location != "http://127.0.0.1:8000/Main.elm" {
 				t.Errorf(
 					"Incorrect Location value: %v != %v",
 					location,
-					"/tweeters-stats",
+					"http://127.0.0.1:8000/Main.elm",
 				)
 			}
 		})
