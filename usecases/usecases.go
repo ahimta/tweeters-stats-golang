@@ -38,7 +38,14 @@ func (xs tweeterStatsSort) Less(i, j int) bool {
 }
 
 // GetTweetersStats blablabla
-func GetTweetersStats(tweetsService services.TweetsService, accessToken, accessSecret string) ([]*entities.TweeterStats, error) {
+func GetTweetersStats(
+	tweetsService services.TweetsService,
+	accessToken,
+	accessSecret string,
+) (
+	[]*entities.TweeterStats, error,
+) {
+
 	if accessToken == "" || accessSecret == "" {
 		return nil, errors.New("usecases: accessToken or accessSecret missing -_-")
 	}
@@ -64,7 +71,12 @@ func GetTweetersStats(tweetsService services.TweetsService, accessToken, accessS
 		}
 	}
 
-	tweetersStats := make([]*entities.TweeterStats, 0, len(tweetersStatsByUsername))
+	tweetersStats := make(
+		[]*entities.TweeterStats,
+		0,
+		len(tweetersStatsByUsername),
+	)
+
 	for _, tweeterStats := range tweetersStatsByUsername {
 		tweetersStats = append(tweetersStats, &entities.TweeterStats{
 			FullName:    tweeterStats.FullName,
@@ -78,7 +90,14 @@ func GetTweetersStats(tweetsService services.TweetsService, accessToken, accessS
 }
 
 // HandleOauth1Callback blablabla
-func HandleOauth1Callback(oauthClient auth.Oauth1Client, requestSecret string, r *http.Request) (*HandleOauth1CallbackResult, error) {
+func HandleOauth1Callback(
+	oauthClient auth.Oauth1Client,
+	requestSecret string,
+	r *http.Request,
+) (
+	*HandleOauth1CallbackResult, error,
+) {
+
 	if requestSecret == "" || r == nil {
 		return nil, errors.New("usecases: requestSecret or request missing -_-")
 	}
@@ -89,13 +108,20 @@ func HandleOauth1Callback(oauthClient auth.Oauth1Client, requestSecret string, r
 		return nil, err
 	}
 
-	accessToken, accessSecret, err := oauthClient.AccessToken(requestToken, requestSecret, verifier)
+	accessToken, accessSecret, err := oauthClient.AccessToken(
+		requestToken,
+		requestSecret,
+		verifier,
+	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &HandleOauth1CallbackResult{AccessToken: accessToken, AccessSecret: accessSecret}, nil
+	return &HandleOauth1CallbackResult{
+		AccessToken:  accessToken,
+		AccessSecret: accessSecret,
+	}, nil
 }
 
 // Login blablabla

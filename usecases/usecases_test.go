@@ -38,28 +38,58 @@ type tweetsService struct {
 	err      error
 }
 
-func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error) {
+func (_tweetsService *tweetsService) FetchTweeters(
+	accessToken,
+	accessSecret string,
+) (
+	[]*entities.Tweeter, error,
+) {
+
 	return _tweetsService.tweeters, _tweetsService.err
 }
 
-func (_oauthClient *oauthClient) AccessToken(requestToken, requestSecret, verifier string) (accessToken, accessSecret string, err error) {
-	return _oauthClient.accessToken, _oauthClient.accessSecret, _oauthClient.accessTokenErr
+func (_oauthClient *oauthClient) AccessToken(
+	requestToken,
+	requestSecret,
+	verifier string) (
+	accessToken, accessSecret string, err error,
+) {
+
+	return _oauthClient.accessToken,
+		_oauthClient.accessSecret,
+		_oauthClient.accessTokenErr
 }
 
-func (_oauthClient *oauthClient) AuthorizationURL(requestToken string) (*url.URL, error) {
+func (_oauthClient *oauthClient) AuthorizationURL(requestToken string) (
+	*url.URL, error,
+) {
+
 	return _oauthClient.url, _oauthClient.authorizationURLError
 }
 
-func (_oauthClient *oauthClient) HTTPClient(accessToken, accessSecret string) (*http.Client, error) {
+func (_oauthClient *oauthClient) HTTPClient(accessToken, accessSecret string) (
+	*http.Client, error,
+) {
+
 	return _oauthClient.client, nil
 }
 
-func (_oauthClient *oauthClient) RequestToken() (requestToken, requestSecret string, err error) {
-	return _oauthClient.requestToken, _oauthClient.requestSecret, _oauthClient.requestTokenError
+func (_oauthClient *oauthClient) RequestToken() (
+	requestToken, requestSecret string, err error,
+) {
+
+	return _oauthClient.requestToken,
+		_oauthClient.requestSecret,
+		_oauthClient.requestTokenError
 }
 
-func (_oauthClient *oauthClient) ParseAuthorizationCallback(r *http.Request) (requestToken, verifier string, err error) {
-	return _oauthClient.parseAuthorizationRequestToken, _oauthClient.verifier, _oauthClient.parseAuthorizationCallbackError
+func (_oauthClient *oauthClient) ParseAuthorizationCallback(r *http.Request) (
+	requestToken, verifier string, err error,
+) {
+
+	return _oauthClient.parseAuthorizationRequestToken,
+		_oauthClient.verifier,
+		_oauthClient.parseAuthorizationCallbackError
 }
 
 func TestGetTweetersStats(t *testing.T) {
@@ -90,7 +120,10 @@ func TestGetTweetersStats(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if stats[0].FullName != "John Smith0" || stats[0].Username != "jsmith0" || stats[0].TweetsCount != 2 {
+	if stats[0].FullName != "John Smith0" ||
+		stats[0].Username != "jsmith0" ||
+		stats[0].TweetsCount != 2 {
+
 		t.Errorf("Should return stats related to tweeters from TweetService")
 	}
 
@@ -105,7 +138,7 @@ func TestGetTweetersStats(t *testing.T) {
 	}, "blablabla", "")
 
 	if err == nil {
-		t.Errorf("Should return an error when either accessToken or accessSecret is missing")
+		t.Errorf("Should return an error when a parameter is missing")
 	}
 
 	if len(stats) != 0 {
@@ -119,7 +152,7 @@ func TestGetTweetersStats(t *testing.T) {
 	}, "blablabla", "")
 
 	if err == nil {
-		t.Errorf("Should return an error when either accessToken or accessSecret is missing")
+		t.Errorf("Should return an error when a parameter is missing")
 	}
 
 	if len(stats) != 0 {
@@ -157,7 +190,9 @@ func TestHandleOauth1Callback(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if result.AccessToken != "accessToken" || result.AccessSecret != "accessSecret" {
+	if result.AccessToken != "accessToken" ||
+		result.AccessSecret != "accessSecret" {
+
 		t.Errorf("Should match Oauth1Client.AccessToken return value")
 	}
 
@@ -195,8 +230,13 @@ func TestLogin(t *testing.T) {
 		url:           &url.URL{Path: "blablabla"},
 	})
 
-	if err != nil || result.RequestSecret != "requestSecret" || result.AuthorizationURL.Path != "blablabla" {
-		t.Errorf("Should return results from client.{RequestToken(),AuthorizationURL()}")
+	if err != nil ||
+		result.RequestSecret != "requestSecret" ||
+		result.AuthorizationURL.Path != "blablabla" {
+
+		t.Errorf(
+			"Should return results from client.{RequestToken(),AuthorizationURL()}",
+		)
 	}
 
 	//

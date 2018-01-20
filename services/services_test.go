@@ -12,7 +12,11 @@ import (
 )
 
 func TestNewTweetsService(t *testing.T) {
-	oauth1Client, _ := auth.NewOauth1Client("consumerKey", "consumerSecret", "callbackURL")
+	oauth1Client, _ := auth.NewOauth1Client(
+		"consumerKey",
+		"consumerSecret",
+		"callbackURL",
+	)
 
 	type args struct {
 		oauthClient auth.Oauth1Client
@@ -31,8 +35,17 @@ func TestNewTweetsService(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := NewTweetsService(tt.args.oauthClient)
-			gotHTTPClientImplPointer := reflect.ValueOf(got).Elem().FieldByName("httpClientImpl").Pointer()
-			wantHTTPClientImplPointer := reflect.ValueOf(tt.want).Elem().FieldByName("httpClientImpl").Pointer()
+			gotHTTPClientImplPointer := reflect.
+				ValueOf(got).
+				Elem().
+				FieldByName("httpClientImpl").
+				Pointer()
+
+			wantHTTPClientImplPointer := reflect.
+				ValueOf(tt.want).
+				Elem().
+				FieldByName("httpClientImpl").
+				Pointer()
 
 			if gotHTTPClientImplPointer != wantHTTPClientImplPointer {
 				t.Errorf("NewTweetsService() = %v, want %v", got, tt.want)

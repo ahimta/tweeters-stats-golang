@@ -11,28 +11,47 @@ import (
 
 // Oauth1Client blablabla
 type Oauth1Client interface {
-	AccessToken(requestToken, requestSecret, verifier string) (accessToken, accessSecret string, err error)
+	AccessToken(requestToken, requestSecret, verifier string) (
+		accessToken, accessSecret string, err error,
+	)
+
 	AuthorizationURL(requestToken string) (*url.URL, error)
 	HTTPClient(accessToken, accessSecret string) (*http.Client, error)
 	RequestToken() (requestToken, requestSecret string, err error)
 
-	ParseAuthorizationCallback(r *http.Request) (requestToken, verifier string, err error)
+	ParseAuthorizationCallback(r *http.Request) (
+		requestToken, verifier string, err error,
+	)
 }
 
 // oauth1Client blabla
 type oauth1Client struct {
-	accessTokenImpl                func(requestToken, requestSecret, verifier string) (accessToken, accessSecret string, err error)
-	authorizationURLImpl           func(requestToken string) (*url.URL, error)
-	clientImpl                     func(ctx context.Context, t *oauth1.Token) *http.Client
+	accessTokenImpl func(
+		requestToken,
+		requestSecret,
+		verifier string) (
+		accessToken, accessSecret string, err error,
+	)
+
+	authorizationURLImpl func(requestToken string) (*url.URL, error)
+
+	clientImpl func(ctx context.Context, t *oauth1.Token) *http.Client
+
 	newTokenImpl                   func(token, tokenSecret string) *oauth1.Token
-	parseAuthorizationCallbackImpl func(r *http.Request) (requestToken, verifier string, err error)
-	requestTokenImpl               func() (requestToken, requestSecret string, err error)
+	parseAuthorizationCallbackImpl func(r *http.Request) (
+		requestToken, verifier string, err error,
+	)
+
+	requestTokenImpl func() (requestToken, requestSecret string, err error)
 }
 
 // NewOauth1Client blabla
-func NewOauth1Client(consumerKey, consumerSecret, callbackURL string) (Oauth1Client, error) {
+func NewOauth1Client(consumerKey, consumerSecret, callbackURL string) (
+	Oauth1Client, error,
+) {
+
 	if consumerKey == "" || consumerSecret == "" || callbackURL == "" {
-		return nil, errors.New("auth: consumerKey, consumerSecret, or callbackURL is missing -_-")
+		return nil, errors.New("auth: a required parameter is missing -_-")
 	}
 
 	config := &oauth1.Config{
@@ -57,16 +76,25 @@ func NewOauth1Client(consumerKey, consumerSecret, callbackURL string) (Oauth1Cli
 }
 
 // AccessToken blabla
-func (client *oauth1Client) AccessToken(requestToken, requestSecret, verifier string) (accessToken, accessSecret string, err error) {
+func (client *oauth1Client) AccessToken(
+	requestToken,
+	requestSecret,
+	verifier string) (
+	accessToken, accessSecret string, err error,
+) {
+
 	if requestToken == "" || requestSecret == "" || verifier == "" {
-		return "", "", errors.New("auth: missing requestToken, requestSecret, or verifier -_-")
+		return "", "", errors.New("auth: a required parameter is missing -_-")
 	}
 
 	return client.accessTokenImpl(requestToken, requestSecret, verifier)
 }
 
 // AuthorizationURL blabla
-func (client *oauth1Client) AuthorizationURL(requestToken string) (*url.URL, error) {
+func (client *oauth1Client) AuthorizationURL(requestToken string) (
+	*url.URL, error,
+) {
+
 	if requestToken == "" {
 		return nil, errors.New("auth: missing requestToken")
 	}
@@ -75,7 +103,10 @@ func (client *oauth1Client) AuthorizationURL(requestToken string) (*url.URL, err
 }
 
 // HTTPClient blabla
-func (client *oauth1Client) HTTPClient(accessToken, accessSecret string) (*http.Client, error) {
+func (client *oauth1Client) HTTPClient(accessToken, accessSecret string) (
+	*http.Client, error,
+) {
+
 	if accessToken == "" || accessSecret == "" {
 		return nil, errors.New("auth: missing accessToken or accessSecret")
 	}
@@ -85,12 +116,18 @@ func (client *oauth1Client) HTTPClient(accessToken, accessSecret string) (*http.
 }
 
 // RequestToken blabla
-func (client *oauth1Client) RequestToken() (requestToken, requestSecret string, err error) {
+func (client *oauth1Client) RequestToken() (
+	requestToken, requestSecret string, err error,
+) {
+
 	return client.requestTokenImpl()
 }
 
 // ParseAuthorizationCallback blabla
-func (client *oauth1Client) ParseAuthorizationCallback(r *http.Request) (requestToken, verifier string, err error) {
+func (client *oauth1Client) ParseAuthorizationCallback(r *http.Request) (
+	requestToken, verifier string, err error,
+) {
+
 	if r == nil {
 		return "", "", errors.New("auth: missing request")
 	}

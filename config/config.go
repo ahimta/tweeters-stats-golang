@@ -15,9 +15,15 @@ type Config struct {
 var config *Config
 
 // NewConfig blablabla
-func NewConfig(consumerKey, consumerSecret, callbackURL, port string) (*Config, error) {
-	if consumerKey == "" || consumerSecret == "" || callbackURL == "" || port == "" {
-		return nil, errors.New("config: missing consumerKey, consumerSecret, or callbackURL -_-")
+func NewConfig(consumerKey, consumerSecret, callbackURL, port string) (
+	*Config, error,
+) {
+
+	if consumerKey == "" ||
+		consumerSecret == "" ||
+		callbackURL == "" ||
+		port == "" {
+		return nil, errors.New("config: a required parameter is missing -_-")
 	}
 
 	return &Config{consumerKey, consumerSecret, callbackURL, port}, nil

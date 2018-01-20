@@ -31,7 +31,12 @@ func TestNewConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewConfig(tt.args.consumerKey, tt.args.consumerSecret, tt.args.callbackURL, tt.args.port)
+			got, err := NewConfig(
+				tt.args.consumerKey,
+				tt.args.consumerSecret,
+				tt.args.callbackURL,
+				tt.args.port,
+			)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewConfig() error = %v, wantErr %v", err, tt.wantErr)
 				return

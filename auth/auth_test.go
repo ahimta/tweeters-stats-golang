@@ -11,7 +11,11 @@ import (
 	"github.com/dghubble/oauth1"
 )
 
-var validClient, _ = NewOauth1Client("consumerKey", "consumerSecret", "callbackURL")
+var validClient, _ = NewOauth1Client(
+	"consumerKey",
+	"consumerSecret",
+	"callbackURL",
+)
 
 func TestNewOauth1Client(t *testing.T) {
 	//
@@ -44,7 +48,7 @@ func Test_oauth1Client_AccessToken(t *testing.T) {
 		wantErr          bool
 	}{
 		{
-			name:    "should return an error when requestToken, requestSecret, or verifier is missing",
+			name:    "should return an error when a parameter is missing",
 			client:  &oauth1Client{},
 			args:    args{"blablabla", "", "blablabla"},
 			wantErr: true,
@@ -52,8 +56,13 @@ func Test_oauth1Client_AccessToken(t *testing.T) {
 		{
 			name: "should call the actual implementation with arguments",
 			client: &oauth1Client{
-				accessTokenImpl: func(requestToken, requestSecret, verifier string) (accessToken, accessSecret string, err error) {
-					if requestToken != "requestToken" || requestSecret != "requestSecret" || verifier != "verifier" {
+				accessTokenImpl: func(requestToken, requestSecret, verifier string) (
+					accessToken, accessSecret string, err error,
+				) {
+
+					if requestToken != "requestToken" ||
+						requestSecret != "requestSecret" ||
+						verifier != "verifier" {
 						t.Errorf("expected to call actual implementation with args -_-")
 					}
 
@@ -68,8 +77,13 @@ func Test_oauth1Client_AccessToken(t *testing.T) {
 		{
 			name: "should return error from actual implementation",
 			client: &oauth1Client{
-				accessTokenImpl: func(requestToken, requestSecret, verifier string) (accessToken, accessSecret string, err error) {
-					if requestToken != "requestToken" || requestSecret != "requestSecret" || verifier != "verifier" {
+				accessTokenImpl: func(requestToken, requestSecret, verifier string) (
+					accessToken, accessSecret string, err error,
+				) {
+
+					if requestToken != "requestToken" ||
+						requestSecret != "requestSecret" ||
+						verifier != "verifier" {
 						t.Errorf("expected to call actual implementation with args -_-")
 					}
 
@@ -83,16 +97,32 @@ func Test_oauth1Client_AccessToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotAccessToken, gotAccessSecret, err := tt.client.AccessToken(tt.args.requestToken, tt.args.requestSecret, tt.args.verifier)
+			gotAccessToken, gotAccessSecret, err := tt.client.AccessToken(
+				tt.args.requestToken,
+				tt.args.requestSecret,
+				tt.args.verifier,
+			)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("oauth1Client.AccessToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"oauth1Client.AccessToken() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 			if gotAccessToken != tt.wantAccessToken {
-				t.Errorf("oauth1Client.AccessToken() gotAccessToken = %v, want %v", gotAccessToken, tt.wantAccessToken)
+				t.Errorf(
+					"oauth1Client.AccessToken() gotAccessToken = %v, want %v",
+					gotAccessToken,
+					tt.wantAccessToken,
+				)
 			}
 			if gotAccessSecret != tt.wantAccessSecret {
-				t.Errorf("oauth1Client.AccessToken() gotAccessSecret = %v, want %v", gotAccessSecret, tt.wantAccessSecret)
+				t.Errorf(
+					"oauth1Client.AccessToken() gotAccessSecret = %v, want %v",
+					gotAccessSecret,
+					tt.wantAccessSecret,
+				)
 			}
 		})
 	}
@@ -143,7 +173,11 @@ func Test_oauth1Client_AuthorizationURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := tt.client.AuthorizationURL(tt.args.requestToken)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("oauth1Client.AuthorizationURL() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"oauth1Client.AuthorizationURL() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
@@ -190,16 +224,23 @@ func Test_oauth1Client_HTTPClient(t *testing.T) {
 			want: client,
 		},
 		{
-			name:    "should return an error when accessToken or accessSecret is missing",
+			name:    "should return an error when a parameter is missing",
 			args:    args{"accesToken", ""},
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.client.HTTPClient(tt.args.accessToken, tt.args.accessSecret)
+			got, err := tt.client.HTTPClient(
+				tt.args.accessToken,
+				tt.args.accessSecret,
+			)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("oauth1Client.HTTPClient() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"oauth1Client.HTTPClient() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
@@ -220,7 +261,12 @@ func Test_oauth1Client_RequestToken(t *testing.T) {
 		{
 			name: "should pass and return values using actual implementation",
 			client: &oauth1Client{
-				requestTokenImpl: func() (requestToken, requestSecret string, err error) {
+				requestTokenImpl: func() (
+					requestToken,
+					requestSecret string,
+					err error,
+				) {
+
 					return "requestToken", "requestSecret", nil
 				},
 			},
@@ -231,7 +277,10 @@ func Test_oauth1Client_RequestToken(t *testing.T) {
 		{
 			name: "should return actual implementation error",
 			client: &oauth1Client{
-				requestTokenImpl: func() (requestToken, requestSecret string, err error) {
+				requestTokenImpl: func() (
+					requestToken, requestSecret string, err error,
+				) {
+
 					return "", "", errors.New("whaaat -_-")
 				},
 			},
@@ -243,14 +292,26 @@ func Test_oauth1Client_RequestToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			gotRequestToken, gotRequestSecret, err := tt.client.RequestToken()
 			if (err != nil) != tt.wantErr {
-				t.Errorf("oauth1Client.RequestToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"oauth1Client.RequestToken() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 			if gotRequestToken != tt.wantRequestToken {
-				t.Errorf("oauth1Client.RequestToken() gotRequestToken = %v, want %v", gotRequestToken, tt.wantRequestToken)
+				t.Errorf(
+					"oauth1Client.RequestToken() gotRequestToken = %v, want %v",
+					gotRequestToken,
+					tt.wantRequestToken,
+				)
 			}
 			if gotRequestSecret != tt.wantRequestSecret {
-				t.Errorf("oauth1Client.RequestToken() gotRequestSecret = %v, want %v", gotRequestSecret, tt.wantRequestSecret)
+				t.Errorf(
+					"oauth1Client.RequestToken() gotRequestSecret = %v, want %v",
+					gotRequestSecret,
+					tt.wantRequestSecret,
+				)
 			}
 		})
 	}
@@ -273,7 +334,10 @@ func Test_oauth1Client_ParseAuthorizationCallback(t *testing.T) {
 		{
 			name: "should pass and return values using actual implementation",
 			client: &oauth1Client{
-				parseAuthorizationCallbackImpl: func(r *http.Request) (requestToken, verifier string, err error) {
+				parseAuthorizationCallbackImpl: func(r *http.Request) (
+					requestToken, verifier string, err error,
+				) {
+
 					if r != request {
 						t.Errorf("Whaaat!")
 					}
@@ -289,7 +353,10 @@ func Test_oauth1Client_ParseAuthorizationCallback(t *testing.T) {
 		{
 			name: "should return error from actual implementation when appropriate",
 			client: &oauth1Client{
-				parseAuthorizationCallbackImpl: func(r *http.Request) (requestToken, verifier string, err error) {
+				parseAuthorizationCallbackImpl: func(r *http.Request) (
+					requestToken, verifier string, err error,
+				) {
+
 					return "", "", errors.New("whaaat -_-")
 				},
 			},
@@ -303,16 +370,31 @@ func Test_oauth1Client_ParseAuthorizationCallback(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotRequestToken, gotVerifier, err := tt.client.ParseAuthorizationCallback(tt.args.r)
+			gotRequestToken, gotVerifier, err := tt.client.ParseAuthorizationCallback(
+				tt.args.r,
+			)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("oauth1Client.ParseAuthorizationCallback() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"oauth1Client.ParseAuthorizationCallback() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 			if gotRequestToken != tt.wantRequestToken {
-				t.Errorf("oauth1Client.ParseAuthorizationCallback() gotRequestToken = %v, want %v", gotRequestToken, tt.wantRequestToken)
+				t.Errorf(
+					("oauth1Client.ParseAuthorizationCallback() gotRequestToken = %v, " +
+						"want %v"),
+					gotRequestToken,
+					tt.wantRequestToken,
+				)
 			}
 			if gotVerifier != tt.wantVerifier {
-				t.Errorf("oauth1Client.ParseAuthorizationCallback() gotVerifier = %v, want %v", gotVerifier, tt.wantVerifier)
+				t.Errorf(
+					"oauth1Client.ParseAuthorizationCallback() gotVerifier = %v, want %v",
+					gotVerifier,
+					tt.wantVerifier,
+				)
 			}
 		})
 	}

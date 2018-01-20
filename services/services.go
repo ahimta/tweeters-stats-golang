@@ -25,7 +25,12 @@ func NewTweetsService(oauthClient auth.Oauth1Client) TweetsService {
 }
 
 // FetchTweeters blablabla
-func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error) {
+func (_tweetsService *tweetsService) FetchTweeters(
+	accessToken,
+	accessSecret string,
+) ([]*entities.Tweeter, error,
+) {
+
 	if accessToken == "" || accessSecret == "" {
 		return nil, errors.New("services: missing accessToken or accessSecret")
 	}
@@ -44,7 +49,12 @@ func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret str
 
 	tweeters := make([]*entities.Tweeter, 0, len(tweets))
 	for _, tweeter := range tweets {
-		tweeters = append(tweeters, &entities.Tweeter{FullName: tweeter.User.Name, Username: tweeter.User.ScreenName})
+		tweeters = append(
+			tweeters,
+			&entities.Tweeter{
+				FullName: tweeter.User.Name,
+				Username: tweeter.User.ScreenName,
+			})
 	}
 
 	return tweeters, nil
@@ -52,7 +62,9 @@ func (_tweetsService *tweetsService) FetchTweeters(accessToken, accessSecret str
 
 func getTweets(httpClient *http.Client) ([]twitter.Tweet, error) {
 	twitterClient := twitter.NewClient(httpClient)
-	tweets, _, err := twitterClient.Timelines.HomeTimeline(&twitter.HomeTimelineParams{Count: 200})
+	tweets, _, err := twitterClient.
+		Timelines.
+		HomeTimeline(&twitter.HomeTimelineParams{Count: 200})
 
 	if err != nil {
 		return nil, err

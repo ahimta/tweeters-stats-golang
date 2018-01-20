@@ -11,12 +11,30 @@ import (
 	"github.com/Ahimta/tweeters-stats-golang/usecases"
 )
 
-type loginUsecaseFunc func(client auth.Oauth1Client) (*usecases.OauthLoginResult, error)
-type handleOauth1CallbackUsecaseFunc func(oauthClient auth.Oauth1Client, requestSecret string, r *http.Request) (*usecases.HandleOauth1CallbackResult, error)
-type getTweetersStatsUsecaseFunc func(tweetsService services.TweetsService, accessToken, accessSecret string) ([]*entities.TweeterStats, error)
+type loginUsecaseFunc func(client auth.Oauth1Client) (
+	*usecases.OauthLoginResult, error,
+)
+
+type handleOauth1CallbackUsecaseFunc func(
+	oauthClient auth.Oauth1Client,
+	requestSecret string,
+	r *http.Request) (
+	*usecases.HandleOauth1CallbackResult, error,
+)
+
+type getTweetersStatsUsecaseFunc func(
+	tweetsService services.TweetsService,
+	accessToken,
+	accessSecret string,
+) (
+	[]*entities.TweeterStats, error,
+)
 
 // LoginHandlerFactory blablabla
-func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1Client) http.HandlerFunc {
+func LoginHandlerFactory(
+	loginUsecase loginUsecaseFunc,
+	oauthClient auth.Oauth1Client,
+) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		oauthLoginResult, err := loginUsecase(oauthClient)
@@ -33,7 +51,12 @@ func LoginHandlerFactory(loginUsecase loginUsecaseFunc, oauthClient auth.Oauth1C
 			Path:  "/",
 		})
 
-		http.Redirect(w, r, oauthLoginResult.AuthorizationURL.String(), http.StatusFound)
+		http.Redirect(
+			w,
+			r,
+			oauthLoginResult.AuthorizationURL.String(),
+			http.StatusFound,
+		)
 	}
 }
 
@@ -62,11 +85,18 @@ func LogoutHandlerFactory() http.HandlerFunc {
 }
 
 // OauthTwitterHandlerFactory blablabla
-func OauthTwitterHandlerFactory(handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc, oauthClient auth.Oauth1Client) http.HandlerFunc {
+func OauthTwitterHandlerFactory(
+	handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc,
+	oauthClient auth.Oauth1Client,
+) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		requestSecret := getCookieValue(r, "oauthRequestSecret")
-		handleOauthResult, err := handleOauth1CallbackUsecase(oauthClient, requestSecret, r)
+		handleOauthResult, err := handleOauth1CallbackUsecase(
+			oauthClient,
+			requestSecret,
+			r,
+		)
 
 		if err != nil {
 			fmt.Println(err)
@@ -96,12 +126,19 @@ type GetTweetersStatsResponse struct {
 }
 
 // GetTweetersStatsHandlerFactory blablabla
-func GetTweetersStatsHandlerFactory(getTweetersStatsUsecase getTweetersStatsUsecaseFunc, tweetsService services.TweetsService) http.HandlerFunc {
+func GetTweetersStatsHandlerFactory(
+	getTweetersStatsUsecase getTweetersStatsUsecaseFunc,
+	tweetsService services.TweetsService,
+) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		accessToken := getCookieValue(r, "accessToken")
 		accessSecret := getCookieValue(r, "accessSecret")
-		stats, err := getTweetersStatsUsecase(tweetsService, accessToken, accessSecret)
+		stats, err := getTweetersStatsUsecase(
+			tweetsService,
+			accessToken,
+			accessSecret,
+		)
 
 		if err != nil {
 			fmt.Println(err)

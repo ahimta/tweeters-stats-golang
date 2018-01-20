@@ -74,9 +74,20 @@ func Apply(handler http.Handler, writer io.Writer) http.Handler {
 		status := w1.status
 		responseBytes := w1.responseBytes
 
-		fmt.Fprintf(writer, apacheFormatPattern, clientIP, timeFormatted, r.Method,
-			r.URL, r.Proto, status, responseBytes, referer, userAgent,
-			elapsedTime.Seconds())
+		fmt.Fprintf(
+			writer,
+			apacheFormatPattern,
+			clientIP,
+			timeFormatted,
+			r.Method,
+			r.URL,
+			r.Proto,
+			status,
+			responseBytes,
+			referer,
+			userAgent,
+			elapsedTime.Seconds(),
+		)
 	})
 }
 
