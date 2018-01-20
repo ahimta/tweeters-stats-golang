@@ -64,7 +64,10 @@ func Apply(handler http.Handler, writer io.Writer) http.Handler {
 
 		startTime := time.Now()
 		w1 := &responseWriter{w, 200, 0}
-		handler.ServeHTTP(w1, r)
+
+		if r.Method != http.MethodOptions {
+			handler.ServeHTTP(w1, r)
+		}
 
 		finishTime := time.Now()
 		time := finishTime.UTC()
