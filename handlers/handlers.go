@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
+	"github.com/Ahimta/tweeters-stats-golang/config"
 	"github.com/Ahimta/tweeters-stats-golang/entities"
 	"github.com/Ahimta/tweeters-stats-golang/services"
 	"github.com/Ahimta/tweeters-stats-golang/usecases"
@@ -97,6 +98,7 @@ func LogoutHandlerFactory() http.HandlerFunc {
 // OauthTwitterHandlerFactory blablabla
 func OauthTwitterHandlerFactory(
 	handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc,
+	c *config.Config,
 	oauthClient auth.Oauth1Client,
 ) http.HandlerFunc {
 
@@ -110,7 +112,7 @@ func OauthTwitterHandlerFactory(
 
 		if err != nil {
 			fmt.Println(err)
-			http.Redirect(w, r, "/", http.StatusFound)
+			http.Redirect(w, r, c.Homepage, http.StatusFound)
 			return
 		}
 
@@ -126,7 +128,7 @@ func OauthTwitterHandlerFactory(
 			Path:  "/",
 		})
 
-		http.Redirect(w, r, "http://127.0.0.1:8000/Main.elm", http.StatusFound)
+		http.Redirect(w, r, c.Homepage, http.StatusFound)
 	}
 }
 

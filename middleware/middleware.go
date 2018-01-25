@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/Ahimta/tweeters-stats-golang/config"
 )
 
 const (
@@ -20,8 +22,13 @@ const (
 // currently it includes:
 // * error-handling middleware
 // * CORS middleware
-// * loggin middleware
-func Apply(handler http.Handler, writer io.Writer) http.Handler {
+// * logging middleware
+func Apply(
+	handler http.Handler,
+	writer io.Writer,
+	c *config.Config,
+) http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// error-handling middleware
 		defer func() {
@@ -44,10 +51,11 @@ func Apply(handler http.Handler, writer io.Writer) http.Handler {
 		}()
 
 		// CORS middleare
-		// @hack: to work for the Elm frontend in the development environment
-		w.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:8000")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		if c.CorsDomain != "" {
+			w.Header().Set("Access-Control-Allow-Origin", c.CorsDomain)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		}
 
 		// logging middleware
 		clientIP := r.RemoteAddr
@@ -72,6 +80,7 @@ func Apply(handler http.Handler, writer io.Writer) http.Handler {
 		startTime := time.Now()
 		w1 := &responseWriter{w, 200, 0}
 
+		// related to CORS middleware
 		if r.Method != http.MethodOptions {
 			handler.ServeHTTP(w1, r)
 		}

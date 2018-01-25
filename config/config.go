@@ -10,21 +10,37 @@ type Config struct {
 	ConsumerSecret string
 	CallbackURL    string
 	Port           string
+	Homepage       string
+	CorsDomain     string
 }
 
 var config *Config
 
 // NewConfig blablabla
-func NewConfig(consumerKey, consumerSecret, callbackURL, port string) (
+func NewConfig(
+	consumerKey,
+	consumerSecret,
+	callbackURL,
+	port,
+	homepage,
+	corsDomain string) (
 	*Config, error,
 ) {
 
 	if consumerKey == "" ||
 		consumerSecret == "" ||
 		callbackURL == "" ||
-		port == "" {
+		port == "" ||
+		homepage == "" {
 		return nil, errors.New("config: a required parameter is missing -_-")
 	}
 
-	return &Config{consumerKey, consumerSecret, callbackURL, port}, nil
+	return &Config{
+		consumerKey,
+		consumerSecret,
+		callbackURL,
+		port,
+		homepage,
+		corsDomain,
+	}, nil
 }

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
+	"github.com/Ahimta/tweeters-stats-golang/config"
 	"github.com/Ahimta/tweeters-stats-golang/entities"
 	"github.com/Ahimta/tweeters-stats-golang/services"
 	"github.com/Ahimta/tweeters-stats-golang/usecases"
@@ -121,6 +122,19 @@ func TestLoginHandlerFactory(t *testing.T) {
 }
 
 func TestOauthTwitterHandlerFactory(t *testing.T) {
+	c, err := config.NewConfig(
+		"consumerKey",
+		"consumerSecret",
+		"callbackURL",
+		"80",
+		"/",
+		"",
+	)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
 	t.Run(
 		"should use underlying implementation and redirect to correct URL",
 		func(t *testing.T) {
@@ -157,7 +171,10 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 				*usecases.HandleOauth1CallbackResult, error,
 			) {
 
-				if client != oauthClient || requestSecret != "requestSecret" || r == nil {
+				if client != oauthClient ||
+					requestSecret != "requestSecret" ||
+					r == nil {
+
 					t.Errorf("parameters not passed to oauth usecase correctly -_-")
 				}
 
@@ -166,7 +183,7 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 
 			rr := httptest.NewRecorder()
 			handler := http.HandlerFunc(
-				OauthTwitterHandlerFactory(handleOauth1CallbackUsecase, oauthClient),
+				OauthTwitterHandlerFactory(handleOauth1CallbackUsecase, c, oauthClient),
 			)
 			handler.ServeHTTP(rr, req)
 
@@ -180,11 +197,11 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 			}
 
 			location := rr.Header().Get("Location")
-			if location != "http://127.0.0.1:8000/Main.elm" {
+			if location != c.Homepage {
 				t.Errorf(
 					"Incorrect Location value: %v != %v",
 					location,
-					"http://127.0.0.1:8000/Main.elm",
+					c.Homepage,
 				)
 			}
 		})
@@ -211,7 +228,7 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 
 			rr := httptest.NewRecorder()
 			handler := http.HandlerFunc(
-				OauthTwitterHandlerFactory(handleOauth1CallbackUsecase, nil),
+				OauthTwitterHandlerFactory(handleOauth1CallbackUsecase, c, nil),
 			)
 			handler.ServeHTTP(rr, req)
 
@@ -223,8 +240,8 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 				t.Errorf("Incorrect Set-Cookie value: %v", setCookie)
 			}
 
-			if location := rr.Header().Get("Location"); location != "/" {
-				t.Errorf("Incorrect Location value: %v != %v", location, "/")
+			if location := rr.Header().Get("Location"); location != c.Homepage {
+				t.Errorf("Incorrect Location value: %v != %v", location, c.Homepage)
 			}
 		})
 }

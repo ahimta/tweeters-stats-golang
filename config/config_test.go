@@ -11,6 +11,8 @@ func TestNewConfig(t *testing.T) {
 		consumerSecret string
 		callbackURL    string
 		port           string
+		homepage       string
+		corsDomain     string
 	}
 	tests := []struct {
 		name    string
@@ -20,12 +22,38 @@ func TestNewConfig(t *testing.T) {
 	}{
 		{
 			name: "should return a valid value when all args are provided",
-			args: args{"consumerKey", "consumerSecret", "callbackURL", "80"},
-			want: &Config{"consumerKey", "consumerSecret", "callbackURL", "80"},
+			args: args{"consumerKey", "consumerSecret", "callbackURL", "8", "/", "d"},
+			want: &Config{
+				"consumerKey",
+				"consumerSecret",
+				"callbackURL",
+				"8",
+				"/",
+				"d",
+			},
 		},
 		{
-			name:    "should return an error when a parameter value is missing",
-			args:    args{"consumerKey", "consumerSecret", "callbackURL", ""},
+			name: "should return a valid value when corsDomain is missing",
+			args: args{"consumerKey", "consumerSecret", "callbackURL", "80", "/", ""},
+			want: &Config{
+				"consumerKey",
+				"consumerSecret",
+				"callbackURL",
+				"80",
+				"/",
+				"",
+			},
+		},
+		{
+			name: "should return an error when a parameter value is missing",
+			args: args{
+				"consumerKey",
+				"consumerSecret",
+				"callbackURL",
+				"80",
+				"",
+				"",
+			},
 			wantErr: true,
 		},
 	}
@@ -36,6 +64,8 @@ func TestNewConfig(t *testing.T) {
 				tt.args.consumerSecret,
 				tt.args.callbackURL,
 				tt.args.port,
+				tt.args.homepage,
+				tt.args.corsDomain,
 			)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewConfig() error = %v, wantErr %v", err, tt.wantErr)
