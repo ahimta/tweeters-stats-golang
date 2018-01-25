@@ -59,7 +59,7 @@ func TestNewConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewConfig(
+			got, err := New(
 				tt.args.consumerKey,
 				tt.args.consumerSecret,
 				tt.args.callbackURL,

@@ -122,7 +122,7 @@ func TestLoginHandlerFactory(t *testing.T) {
 }
 
 func TestOauthTwitterHandlerFactory(t *testing.T) {
-	c, err := config.NewConfig(
+	c, err := config.New(
 		"consumerKey",
 		"consumerSecret",
 		"callbackURL",

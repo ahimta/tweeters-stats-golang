@@ -14,10 +14,8 @@ type Config struct {
 	CorsDomain     string
 }
 
-var config *Config
-
-// NewConfig blablabla
-func NewConfig(
+// New blablabla
+func New(
 	consumerKey,
 	consumerSecret,
 	callbackURL,

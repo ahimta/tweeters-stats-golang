@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	c, err := config.NewConfig(
+	c, err := config.New(
 		os.Getenv("CONSUMER_KEY"),
 		os.Getenv("CONSUMER_SECRET"),
 		os.Getenv("CALLBACK_URL"),
