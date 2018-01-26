@@ -11,21 +11,21 @@ import (
 
 // TweetsService blablabla
 type TweetsService interface {
-	FetchTweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error)
+	Tweeters(accessToken, accessSecret string) ([]*entities.Tweeter, error)
 }
 
 type tweetsService struct {
-	getTweetsImpl  func(httpClient *http.Client) ([]twitter.Tweet, error)
+	tweetsImpl     func(httpClient *http.Client) ([]twitter.Tweet, error)
 	httpClientImpl func(accessToken, accessSecret string) (*http.Client, error)
 }
 
 // NewTweetsService blablabla
-func NewTweetsService(oauthClient auth.Oauth1Client) TweetsService {
-	return &tweetsService{getTweets, oauthClient.HTTPClient}
+func NewTweetsService(client auth.Oauth1Client) TweetsService {
+	return &tweetsService{getTweets, client.HTTPClient}
 }
 
-// FetchTweeters blablabla
-func (_tweetsService *tweetsService) FetchTweeters(
+// Tweeters blablabla
+func (service *tweetsService) Tweeters(
 	accessToken,
 	accessSecret string,
 ) ([]*entities.Tweeter, error,
@@ -35,13 +35,13 @@ func (_tweetsService *tweetsService) FetchTweeters(
 		return nil, errors.New("services: missing accessToken or accessSecret")
 	}
 
-	httpClient, err := _tweetsService.httpClientImpl(accessToken, accessSecret)
+	httpClient, err := service.httpClientImpl(accessToken, accessSecret)
 
 	if err != nil {
 		return nil, err
 	}
 
-	tweets, err := _tweetsService.getTweetsImpl(httpClient)
+	tweets, err := service.tweetsImpl(httpClient)
 
 	if err != nil {
 		return nil, err
@@ -60,8 +60,8 @@ func (_tweetsService *tweetsService) FetchTweeters(
 	return tweeters, nil
 }
 
-func getTweets(httpClient *http.Client) ([]twitter.Tweet, error) {
-	twitterClient := twitter.NewClient(httpClient)
+func getTweets(client *http.Client) ([]twitter.Tweet, error) {
+	twitterClient := twitter.NewClient(client)
 	tweets, _, err := twitterClient.
 		Timelines.
 		HomeTimeline(&twitter.HomeTimelineParams{Count: 200})

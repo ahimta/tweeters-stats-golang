@@ -54,7 +54,7 @@ func TestNewTweetsService(t *testing.T) {
 	}
 }
 
-func Test_tweetsService_FetchTweeters(t *testing.T) {
+func Test_tweetsService_Tweeters(t *testing.T) {
 	_httpClient := &http.Client{}
 
 	type args struct {
@@ -62,24 +62,30 @@ func Test_tweetsService_FetchTweeters(t *testing.T) {
 		accessSecret string
 	}
 	tests := []struct {
-		name           string
-		_tweetsService *tweetsService
-		args           args
-		want           []*entities.Tweeter
-		wantErr        bool
+		name    string
+		service *tweetsService
+		args    args
+		want    []*entities.Tweeter
+		wantErr bool
 	}{
 		{
 			name: "should use the underlying implementation correctly",
 
-			_tweetsService: &tweetsService{
-				getTweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
+			service: &tweetsService{
+				tweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
 					if httpClient != _httpClient {
 						t.Errorf("httpClient not passed correctly")
 					}
 
 					return []twitter.Tweet{}, nil
 				},
-				httpClientImpl: func(accessToken, accessSecret string) (*http.Client, error) {
+				httpClientImpl: func(
+					accessToken,
+					accessSecret string,
+				) (
+					*http.Client,
+					error) {
+
 					if accessToken != "accessToken" || accessSecret != "accessSecret" {
 						t.Errorf("accessToken or accessSecret not passed correctly")
 					}
@@ -94,15 +100,22 @@ func Test_tweetsService_FetchTweeters(t *testing.T) {
 		{
 			name: "should process the returned tweets correctly",
 
-			_tweetsService: &tweetsService{
-				getTweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
+			service: &tweetsService{
+				tweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
 					return []twitter.Tweet{
 						{
 							User: &twitter.User{Name: "John Smith", ScreenName: "jsmith"},
 						},
 					}, nil
 				},
-				httpClientImpl: func(accessToken, accessSecret string) (*http.Client, error) {
+				httpClientImpl: func(
+					accessToken,
+					accessSecret string,
+				) (
+					*http.Client,
+					error,
+				) {
+
 					return _httpClient, nil
 				},
 			},
@@ -118,11 +131,14 @@ func Test_tweetsService_FetchTweeters(t *testing.T) {
 		{
 			name: "should return an error when httpClientImpl does",
 
-			_tweetsService: &tweetsService{
-				getTweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
+			service: &tweetsService{
+				tweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
 					return []twitter.Tweet{}, nil
 				},
-				httpClientImpl: func(accessToken, accessSecret string) (*http.Client, error) {
+				httpClientImpl: func(accessToken, accessSecret string) (
+					*http.Client, error,
+				) {
+
 					return nil, errors.New("whaaat -_-")
 				},
 			},
@@ -133,11 +149,17 @@ func Test_tweetsService_FetchTweeters(t *testing.T) {
 		{
 			name: "should return an error when getTweetsImpl does",
 
-			_tweetsService: &tweetsService{
-				getTweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
+			service: &tweetsService{
+				tweetsImpl: func(httpClient *http.Client) ([]twitter.Tweet, error) {
 					return nil, errors.New("whaaat -_-")
 				},
-				httpClientImpl: func(accessToken, accessSecret string) (*http.Client, error) {
+				httpClientImpl: func(
+					accessToken,
+					accessSecret string,
+				) (
+					*http.Client, error,
+				) {
+
 					return _httpClient, nil
 				},
 			},
@@ -146,17 +168,21 @@ func Test_tweetsService_FetchTweeters(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:           "should return an error when accessToken or accessSecret is missing",
-			_tweetsService: &tweetsService{},
-			args:           args{"accessToken", ""},
-			wantErr:        true,
+			name:    "should return an error when a required parameter is missing",
+			service: &tweetsService{},
+			args:    args{"accessToken", ""},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt._tweetsService.FetchTweeters(tt.args.accessToken, tt.args.accessSecret)
+			got, err := tt.service.Tweeters(tt.args.accessToken, tt.args.accessSecret)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("tweetsService.FetchTweeters() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf(
+					"tweetsService.FetchTweeters() error = %v, wantErr %v",
+					err,
+					tt.wantErr,
+				)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

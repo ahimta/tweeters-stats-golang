@@ -11,34 +11,34 @@ import (
 	"github.com/Ahimta/tweeters-stats-golang/services"
 )
 
-// OauthLoginResult blablabla
-type OauthLoginResult struct {
+// LoginResult blablabla
+type LoginResult struct {
 	AuthorizationURL *url.URL
 	RequestSecret    string
 }
 
-// HandleOauth1CallbackResult blablabla
-type HandleOauth1CallbackResult struct {
+// Oauth1CallbackResult blablabla
+type Oauth1CallbackResult struct {
 	AccessToken  string
 	AccessSecret string
 }
 
-type tweeterStatsSort []*entities.TweeterStats
+type statsSort []*entities.TweeterStats
 
-func (xs tweeterStatsSort) Len() int {
+func (xs statsSort) Len() int {
 	return len(xs)
 }
 
-func (xs tweeterStatsSort) Swap(i, j int) {
+func (xs statsSort) Swap(i, j int) {
 	xs[i], xs[j] = xs[j], xs[i]
 }
 
-func (xs tweeterStatsSort) Less(i, j int) bool {
+func (xs statsSort) Less(i, j int) bool {
 	return (xs[i].TweetsCount < xs[j].TweetsCount)
 }
 
-// GetTweetersStats blablabla
-func GetTweetersStats(
+// TweetersStats blablabla
+func TweetersStats(
 	tweetsService services.TweetsService,
 	accessToken,
 	accessSecret string,
@@ -50,20 +50,20 @@ func GetTweetersStats(
 		return nil, errors.New("usecases: accessToken or accessSecret missing -_-")
 	}
 
-	tweeters, err := tweetsService.FetchTweeters(accessToken, accessSecret)
+	tweeters, err := tweetsService.Tweeters(accessToken, accessSecret)
 
 	if err != nil {
 		return nil, err
 	}
 
-	tweetersStatsByUsername := make(map[string]*entities.TweeterStats)
+	statsByUsername := make(map[string]*entities.TweeterStats)
 	for _, tweeter := range tweeters {
-		tweeterStats, ok := tweetersStatsByUsername[tweeter.Username]
+		tweeterStats, ok := statsByUsername[tweeter.Username]
 
 		if ok {
 			tweeterStats.TweetsCount++
 		} else {
-			tweetersStatsByUsername[tweeter.Username] = &entities.TweeterStats{
+			statsByUsername[tweeter.Username] = &entities.TweeterStats{
 				FullName:    tweeter.FullName,
 				Username:    tweeter.Username,
 				TweetsCount: 1,
@@ -71,13 +71,9 @@ func GetTweetersStats(
 		}
 	}
 
-	tweetersStats := make(
-		[]*entities.TweeterStats,
-		0,
-		len(tweetersStatsByUsername),
-	)
+	tweetersStats := make([]*entities.TweeterStats, 0, len(statsByUsername))
 
-	for _, tweeterStats := range tweetersStatsByUsername {
+	for _, tweeterStats := range statsByUsername {
 		tweetersStats = append(tweetersStats, &entities.TweeterStats{
 			FullName:    tweeterStats.FullName,
 			Username:    tweeterStats.Username,
@@ -85,30 +81,30 @@ func GetTweetersStats(
 		})
 	}
 
-	sort.Sort(sort.Reverse(tweeterStatsSort(tweetersStats)))
+	sort.Sort(sort.Reverse(statsSort(tweetersStats)))
 	return tweetersStats, nil
 }
 
-// HandleOauth1Callback blablabla
-func HandleOauth1Callback(
-	oauthClient auth.Oauth1Client,
+// Oauth1Callback blablabla
+func Oauth1Callback(
+	client auth.Oauth1Client,
 	requestSecret string,
 	r *http.Request,
 ) (
-	*HandleOauth1CallbackResult, error,
+	*Oauth1CallbackResult, error,
 ) {
 
 	if requestSecret == "" || r == nil {
 		return nil, errors.New("usecases: requestSecret or request missing -_-")
 	}
 
-	requestToken, verifier, err := oauthClient.ParseAuthorizationCallback(r)
+	requestToken, verifier, err := client.ParseAuthorizationCallback(r)
 
 	if err != nil {
 		return nil, err
 	}
 
-	accessToken, accessSecret, err := oauthClient.AccessToken(
+	accessToken, accessSecret, err := client.AccessToken(
 		requestToken,
 		requestSecret,
 		verifier,
@@ -118,14 +114,14 @@ func HandleOauth1Callback(
 		return nil, err
 	}
 
-	return &HandleOauth1CallbackResult{
+	return &Oauth1CallbackResult{
 		AccessToken:  accessToken,
 		AccessSecret: accessSecret,
 	}, nil
 }
 
 // Login blablabla
-func Login(client auth.Oauth1Client) (*OauthLoginResult, error) {
+func Login(client auth.Oauth1Client) (*LoginResult, error) {
 	requestToken, requestSecret, err := client.RequestToken()
 
 	if err != nil {
@@ -133,7 +129,7 @@ func Login(client auth.Oauth1Client) (*OauthLoginResult, error) {
 	}
 
 	authorizationURL, err := client.AuthorizationURL(requestToken)
-	return &OauthLoginResult{
+	return &LoginResult{
 		AuthorizationURL: authorizationURL,
 		RequestSecret:    requestSecret,
 	}, nil

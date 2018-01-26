@@ -44,23 +44,20 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", indexHandler)
-	mux.HandleFunc(
-		"/login/twitter",
-		handlers.LoginHandlerFactory(usecases.Login, oauthClient),
-	)
+	mux.HandleFunc("/login/twitter", handlers.Login(usecases.Login, oauthClient))
 	mux.HandleFunc(
 		"/oauth/twitter/callback",
-		handlers.OauthTwitterHandlerFactory(
-			usecases.HandleOauth1Callback,
+		handlers.OauthTwitter(
+			usecases.Oauth1Callback,
 			c,
 			oauthClient,
 		),
 	)
-	mux.HandleFunc("/logout", handlers.LogoutHandlerFactory())
+	mux.HandleFunc("/logout", handlers.Logout())
 	mux.HandleFunc(
 		"/tweeters-stats",
-		handlers.GetTweetersStatsHandlerFactory(
-			usecases.GetTweetersStats,
+		handlers.TweetersStats(
+			usecases.TweetersStats,
 			tweetsService,
 		),
 	)

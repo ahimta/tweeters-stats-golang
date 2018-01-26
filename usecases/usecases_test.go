@@ -38,83 +38,83 @@ type tweetsService struct {
 	err      error
 }
 
-func (_tweetsService *tweetsService) FetchTweeters(
+func (service *tweetsService) Tweeters(
 	accessToken,
 	accessSecret string,
 ) (
 	[]*entities.Tweeter, error,
 ) {
 
-	return _tweetsService.tweeters, _tweetsService.err
+	return service.tweeters, service.err
 }
 
-func (_oauthClient *oauthClient) AccessToken(
+func (client *oauthClient) AccessToken(
 	requestToken,
 	requestSecret,
 	verifier string) (
 	accessToken, accessSecret string, err error,
 ) {
 
-	return _oauthClient.accessToken,
-		_oauthClient.accessSecret,
-		_oauthClient.accessTokenErr
+	return client.accessToken, client.accessSecret, client.accessTokenErr
 }
 
-func (_oauthClient *oauthClient) AuthorizationURL(requestToken string) (
+func (client *oauthClient) AuthorizationURL(requestToken string) (
 	*url.URL, error,
 ) {
 
-	return _oauthClient.url, _oauthClient.authorizationURLError
+	return client.url, client.authorizationURLError
 }
 
-func (_oauthClient *oauthClient) HTTPClient(accessToken, accessSecret string) (
+func (client *oauthClient) HTTPClient(accessToken, accessSecret string) (
 	*http.Client, error,
 ) {
 
-	return _oauthClient.client, nil
+	return client.client, nil
 }
 
-func (_oauthClient *oauthClient) RequestToken() (
+func (client *oauthClient) RequestToken() (
 	requestToken, requestSecret string, err error,
 ) {
 
-	return _oauthClient.requestToken,
-		_oauthClient.requestSecret,
-		_oauthClient.requestTokenError
+	return client.requestToken, client.requestSecret, client.requestTokenError
 }
 
-func (_oauthClient *oauthClient) ParseAuthorizationCallback(r *http.Request) (
+func (client *oauthClient) ParseAuthorizationCallback(r *http.Request) (
 	requestToken, verifier string, err error,
 ) {
 
-	return _oauthClient.parseAuthorizationRequestToken,
-		_oauthClient.verifier,
-		_oauthClient.parseAuthorizationCallbackError
+	return client.parseAuthorizationRequestToken,
+		client.verifier,
+		client.parseAuthorizationCallbackError
 }
 
-func TestGetTweetersStats(t *testing.T) {
+func TestTweetersStats(t *testing.T) {
 	//
-	stats, err := GetTweetersStats(&tweetsService{
-		tweeters: []*entities.Tweeter{
-			&entities.Tweeter{
-				FullName: "John Smith1",
-				Username: "jsmith1",
+	stats, err := TweetersStats(
+		&tweetsService{
+			tweeters: []*entities.Tweeter{
+				&entities.Tweeter{
+					FullName: "John Smith1",
+					Username: "jsmith1",
+				},
+				&entities.Tweeter{
+					FullName: "John Smith0",
+					Username: "jsmith0",
+				},
+				&entities.Tweeter{
+					FullName: "John Smith2",
+					Username: "jsmith2",
+				},
+				&entities.Tweeter{
+					FullName: "John Smith0",
+					Username: "jsmith0",
+				},
 			},
-			&entities.Tweeter{
-				FullName: "John Smith0",
-				Username: "jsmith0",
-			},
-			&entities.Tweeter{
-				FullName: "John Smith2",
-				Username: "jsmith2",
-			},
-			&entities.Tweeter{
-				FullName: "John Smith0",
-				Username: "jsmith0",
-			},
+			err: nil,
 		},
-		err: nil,
-	}, "blablabla", "blablabla")
+		"blablabla",
+		"blablabla",
+	)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -132,10 +132,14 @@ func TestGetTweetersStats(t *testing.T) {
 	}
 
 	//
-	stats, err = GetTweetersStats(&tweetsService{
-		tweeters: nil,
-		err:      nil,
-	}, "blablabla", "")
+	stats, err = TweetersStats(
+		&tweetsService{
+			tweeters: nil,
+			err:      nil,
+		},
+		"blablabla",
+		"",
+	)
 
 	if err == nil {
 		t.Errorf("Should return an error when a parameter is missing")
@@ -146,10 +150,14 @@ func TestGetTweetersStats(t *testing.T) {
 	}
 
 	//
-	stats, err = GetTweetersStats(&tweetsService{
-		tweeters: nil,
-		err:      nil,
-	}, "blablabla", "")
+	stats, err = TweetersStats(
+		&tweetsService{
+			tweeters: nil,
+			err:      nil,
+		},
+		"blablabla",
+		"",
+	)
 
 	if err == nil {
 		t.Errorf("Should return an error when a parameter is missing")
@@ -160,10 +168,14 @@ func TestGetTweetersStats(t *testing.T) {
 	}
 
 	//
-	stats, err = GetTweetersStats(&tweetsService{
-		tweeters: nil,
-		err:      errors.New("blablabla"),
-	}, "blablabla", "blabla")
+	stats, err = TweetersStats(
+		&tweetsService{
+			tweeters: nil,
+			err:      errors.New("blablabla"),
+		},
+		"blablabla",
+		"blabla",
+	)
 
 	if !(err != nil) {
 		t.Errorf("Should return an error when TweetService returns an error")
@@ -176,15 +188,19 @@ func TestGetTweetersStats(t *testing.T) {
 
 func TestHandleOauth1Callback(t *testing.T) {
 	//
-	result, err := HandleOauth1Callback(&oauthClient{
-		parseAuthorizationRequestToken:  "requestToken",
-		verifier:                        "verifier",
-		parseAuthorizationCallbackError: nil,
+	result, err := Oauth1Callback(
+		&oauthClient{
+			parseAuthorizationRequestToken:  "requestToken",
+			verifier:                        "verifier",
+			parseAuthorizationCallbackError: nil,
 
-		accessToken:    "accessToken",
-		accessSecret:   "accessSecret",
-		accessTokenErr: nil,
-	}, "blablabla", &http.Request{})
+			accessToken:    "accessToken",
+			accessSecret:   "accessSecret",
+			accessTokenErr: nil,
+		},
+		"blablabla",
+		&http.Request{},
+	)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -197,25 +213,33 @@ func TestHandleOauth1Callback(t *testing.T) {
 	}
 
 	//
-	result, err = HandleOauth1Callback(&oauthClient{}, "blablabla", nil)
+	result, err = Oauth1Callback(&oauthClient{}, "blablabla", nil)
 
 	if err == nil || result != nil {
 		t.Errorf("Whaaat!")
 	}
 
 	//
-	result, err = HandleOauth1Callback(&oauthClient{
-		parseAuthorizationCallbackError: errors.New("blablabla"),
-	}, "blablabla", &http.Request{})
+	result, err = Oauth1Callback(
+		&oauthClient{
+			parseAuthorizationCallbackError: errors.New("blablabla"),
+		},
+		"blablabla",
+		&http.Request{},
+	)
 
 	if err == nil || result != nil {
 		t.Errorf("Whaaat!")
 	}
 
 	//
-	result, err = HandleOauth1Callback(&oauthClient{
-		accessTokenErr: errors.New("blablabla"),
-	}, "blablabla", &http.Request{})
+	result, err = Oauth1Callback(
+		&oauthClient{
+			accessTokenErr: errors.New("blablabla"),
+		},
+		"blablabla",
+		&http.Request{},
+	)
 
 	if err == nil || result != nil {
 		t.Errorf("Whaaat!")

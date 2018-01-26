@@ -13,28 +13,27 @@ import (
 )
 
 type loginUsecaseFunc func(client auth.Oauth1Client) (
-	*usecases.OauthLoginResult, error,
+	*usecases.LoginResult, error,
 )
 
-type handleOauth1CallbackUsecaseFunc func(
+type oauth1CallbackUsecaseFunc func(
 	oauthClient auth.Oauth1Client,
 	requestSecret string,
 	r *http.Request) (
-	*usecases.HandleOauth1CallbackResult, error,
+	*usecases.Oauth1CallbackResult, error,
 )
 
-type getTweetersStatsUsecaseFunc func(
-	tweetsService services.TweetsService,
-	accessToken,
+type tweetersStatsUsecaseFunc func(
+	tweetsService services.TweetsService, accessToken,
 	accessSecret string,
 ) (
 	[]*entities.TweeterStats, error,
 )
 
-// LoginHandlerFactory blablabla
-func LoginHandlerFactory(
-	loginUsecase loginUsecaseFunc,
-	oauthClient auth.Oauth1Client,
+// Login blablabla
+func Login(
+	usecase loginUsecaseFunc,
+	client auth.Oauth1Client,
 ) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +42,7 @@ func LoginHandlerFactory(
 			return
 		}
 
-		oauthLoginResult, err := loginUsecase(oauthClient)
+		result, err := usecase(client)
 
 		if err != nil {
 			fmt.Println(err)
@@ -53,21 +52,16 @@ func LoginHandlerFactory(
 
 		http.SetCookie(w, &http.Cookie{
 			Name:  "oauthRequestSecret",
-			Value: oauthLoginResult.RequestSecret,
+			Value: result.RequestSecret,
 			Path:  "/",
 		})
 
-		http.Redirect(
-			w,
-			r,
-			oauthLoginResult.AuthorizationURL.String(),
-			http.StatusFound,
-		)
+		http.Redirect(w, r, result.AuthorizationURL.String(), http.StatusFound)
 	}
 }
 
-// LogoutHandlerFactory blablabla
-func LogoutHandlerFactory() http.HandlerFunc {
+// Logout blablabla
+func Logout() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodDelete {
@@ -95,20 +89,16 @@ func LogoutHandlerFactory() http.HandlerFunc {
 	}
 }
 
-// OauthTwitterHandlerFactory blablabla
-func OauthTwitterHandlerFactory(
-	handleOauth1CallbackUsecase handleOauth1CallbackUsecaseFunc,
+// OauthTwitter blablabla
+func OauthTwitter(
+	usecase oauth1CallbackUsecaseFunc,
 	c *config.Config,
-	oauthClient auth.Oauth1Client,
+	client auth.Oauth1Client,
 ) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		requestSecret := getCookieValue(r, "oauthRequestSecret")
-		handleOauthResult, err := handleOauth1CallbackUsecase(
-			oauthClient,
-			requestSecret,
-			r,
-		)
+		requestSecret := cookieValue(r, "oauthRequestSecret")
+		result, err := usecase(client, requestSecret, r)
 
 		if err != nil {
 			fmt.Println(err)
@@ -118,13 +108,13 @@ func OauthTwitterHandlerFactory(
 
 		http.SetCookie(w, &http.Cookie{
 			Name:  "accessToken",
-			Value: handleOauthResult.AccessToken,
+			Value: result.AccessToken,
 			Path:  "/",
 		})
 
 		http.SetCookie(w, &http.Cookie{
 			Name:  "accessSecret",
-			Value: handleOauthResult.AccessSecret,
+			Value: result.AccessSecret,
 			Path:  "/",
 		})
 
@@ -132,16 +122,15 @@ func OauthTwitterHandlerFactory(
 	}
 }
 
-// GetTweetersStatsResponse blablabla
-type GetTweetersStatsResponse struct {
+// TweetersStatsResponse blablabla
+type TweetersStatsResponse struct {
 	Data []*entities.TweeterStats `json:"data"`
 }
 
-// GetTweetersStatsHandlerFactory blablabla
-func GetTweetersStatsHandlerFactory(
-	getTweetersStatsUsecase getTweetersStatsUsecaseFunc,
-	tweetsService services.TweetsService,
-) http.HandlerFunc {
+// TweetersStats blablabla
+func TweetersStats(
+	usecase tweetersStatsUsecaseFunc,
+	service services.TweetsService) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
@@ -149,13 +138,9 @@ func GetTweetersStatsHandlerFactory(
 			return
 		}
 
-		accessToken := getCookieValue(r, "accessToken")
-		accessSecret := getCookieValue(r, "accessSecret")
-		stats, err := getTweetersStatsUsecase(
-			tweetsService,
-			accessToken,
-			accessSecret,
-		)
+		accessToken := cookieValue(r, "accessToken")
+		accessSecret := cookieValue(r, "accessSecret")
+		stats, err := usecase(service, accessToken, accessSecret)
 
 		if err != nil {
 			fmt.Println(err)
@@ -163,11 +148,11 @@ func GetTweetersStatsHandlerFactory(
 			return
 		}
 
-		json.NewEncoder(w).Encode(&GetTweetersStatsResponse{stats})
+		json.NewEncoder(w).Encode(&TweetersStatsResponse{stats})
 	}
 }
 
-func getCookieValue(r *http.Request, name string) string {
+func cookieValue(r *http.Request, name string) string {
 	cookie, err := r.Cookie(name)
 
 	if err != nil {

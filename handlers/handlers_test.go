@@ -16,7 +16,7 @@ import (
 	"github.com/Ahimta/tweeters-stats-golang/usecases"
 )
 
-func TestLoginHandlerFactory(t *testing.T) {
+func TestLogin(t *testing.T) {
 	t.Run(
 		"should use underlying implementation and redirect to correct URL",
 		func(t *testing.T) {
@@ -43,24 +43,19 @@ func TestLoginHandlerFactory(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			loginUsecase := func(client auth.Oauth1Client) (
-				*usecases.OauthLoginResult, error,
-			) {
-
+			usecase := func(client auth.Oauth1Client) (*usecases.LoginResult, error) {
 				if client != oauthClient {
 					t.Errorf("oauthClient not passed to login usecase -_-")
 				}
 
-				return &usecases.OauthLoginResult{
+				return &usecases.LoginResult{
 					AuthorizationURL: authorizationURL,
 					RequestSecret:    "requestSecret",
 				}, nil
 			}
 
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(
-				LoginHandlerFactory(loginUsecase, oauthClient),
-			)
+			handler := http.HandlerFunc(Login(usecase, oauthClient))
 			handler.ServeHTTP(rr, req)
 
 			if status := rr.Code; status != http.StatusFound {
@@ -96,15 +91,12 @@ func TestLoginHandlerFactory(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			loginUsecase := func(client auth.Oauth1Client) (
-				*usecases.OauthLoginResult, error,
-			) {
-
+			usecase := func(client auth.Oauth1Client) (*usecases.LoginResult, error) {
 				return nil, errors.New("whaaat -_-")
 			}
 
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(LoginHandlerFactory(loginUsecase, nil))
+			handler := http.HandlerFunc(Login(usecase, nil))
 			handler.ServeHTTP(rr, req)
 
 			if status := rr.Code; status != http.StatusFound {
@@ -121,7 +113,7 @@ func TestLoginHandlerFactory(t *testing.T) {
 		})
 }
 
-func TestOauthTwitterHandlerFactory(t *testing.T) {
+func TestOauthTwitter(t *testing.T) {
 	c, err := config.New(
 		"consumerKey",
 		"consumerSecret",
@@ -149,7 +141,7 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			result := &usecases.HandleOauth1CallbackResult{
+			result := &usecases.Oauth1CallbackResult{
 				AccessToken:  "accessToken",
 				AccessSecret: "accessSecret",
 			}
@@ -164,11 +156,11 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			handleOauth1CallbackUsecase := func(
+			usecase := func(
 				client auth.Oauth1Client,
 				requestSecret string,
 				r *http.Request) (
-				*usecases.HandleOauth1CallbackResult, error,
+				*usecases.Oauth1CallbackResult, error,
 			) {
 
 				if client != oauthClient ||
@@ -182,9 +174,7 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 			}
 
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(
-				OauthTwitterHandlerFactory(handleOauth1CallbackUsecase, c, oauthClient),
-			)
+			handler := http.HandlerFunc(OauthTwitter(usecase, c, oauthClient))
 			handler.ServeHTTP(rr, req)
 
 			if status := rr.Code; status != http.StatusFound {
@@ -216,20 +206,18 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			handleOauth1CallbackUsecase := func(
+			usecase := func(
 				client auth.Oauth1Client,
 				requestSecret string,
 				r *http.Request) (
-				*usecases.HandleOauth1CallbackResult, error,
+				*usecases.Oauth1CallbackResult, error,
 			) {
 
 				return nil, errors.New("whaaat -_-")
 			}
 
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(
-				OauthTwitterHandlerFactory(handleOauth1CallbackUsecase, c, nil),
-			)
+			handler := http.HandlerFunc(OauthTwitter(usecase, c, nil))
 			handler.ServeHTTP(rr, req)
 
 			if status := rr.Code; status != http.StatusFound {
@@ -246,7 +234,7 @@ func TestOauthTwitterHandlerFactory(t *testing.T) {
 		})
 }
 
-func TestGetTweetersStatsHandlerFactory(t *testing.T) {
+func TestTweetersStats(t *testing.T) {
 	t.Run(
 		"should use underlying implementation and redirect to correct URL",
 		func(t *testing.T) {
@@ -285,15 +273,14 @@ func TestGetTweetersStatsHandlerFactory(t *testing.T) {
 
 			tweetsService := services.NewTweetsService(oauthClient)
 
-			getTweetersStatsUsecase := func(
-				_tweetsService services.TweetsService,
-				accessToken,
+			usecase := func(
+				service services.TweetsService, accessToken,
 				accessSecret string,
 			) (
 				[]*entities.TweeterStats, error,
 			) {
 
-				if _tweetsService != tweetsService ||
+				if service != tweetsService ||
 					accessToken != "accessToken" ||
 					accessSecret != "accessSecret" {
 
@@ -306,9 +293,7 @@ func TestGetTweetersStatsHandlerFactory(t *testing.T) {
 			}
 
 			rr := httptest.NewRecorder()
-			handler := http.HandlerFunc(
-				GetTweetersStatsHandlerFactory(getTweetersStatsUsecase, tweetsService),
-			)
+			handler := http.HandlerFunc(TweetersStats(usecase, tweetsService))
 			handler.ServeHTTP(rr, req)
 
 			if status := rr.Code; status != http.StatusOK {
@@ -319,7 +304,7 @@ func TestGetTweetersStatsHandlerFactory(t *testing.T) {
 				t.Errorf("Incorrect Set-Cookie value: %v", setCookie)
 			}
 
-			var responseBody GetTweetersStatsResponse
+			var responseBody TweetersStatsResponse
 			json.NewDecoder(rr.Body).Decode(&responseBody)
 
 			if !reflect.DeepEqual(responseBody.Data, result) {
@@ -350,9 +335,8 @@ func TestGetTweetersStatsHandlerFactory(t *testing.T) {
 
 		tweetsService := services.NewTweetsService(oauthClient)
 
-		getTweetersStatsUsecase := func(
-			_tweetsService services.TweetsService,
-			accessToken,
+		usecase := func(
+			service services.TweetsService, accessToken,
 			accessSecret string,
 		) (
 			[]*entities.TweeterStats, error,
@@ -362,9 +346,7 @@ func TestGetTweetersStatsHandlerFactory(t *testing.T) {
 		}
 
 		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(
-			GetTweetersStatsHandlerFactory(getTweetersStatsUsecase, tweetsService),
-		)
+		handler := http.HandlerFunc(TweetersStats(usecase, tweetsService))
 		handler.ServeHTTP(rr, req)
 
 		if status := rr.Code; status != http.StatusUnauthorized {

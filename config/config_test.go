@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestNewConfig(t *testing.T) {
+func TestNew(t *testing.T) {
 	type args struct {
 		consumerKey    string
 		consumerSecret string
