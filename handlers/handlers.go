@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
@@ -29,6 +30,20 @@ type tweetersStatsUsecaseFunc func(
 ) (
 	[]*entities.TweeterStats, error,
 )
+
+// Homepage blablabla
+func Homepage() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data, err := ioutil.ReadFile("index.html")
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(data)
+	}
+}
 
 // Login blablabla
 func Login(

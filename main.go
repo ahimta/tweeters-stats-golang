@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 
@@ -43,7 +42,7 @@ func main() {
 	tweetsService := services.NewTweetsService(oauthClient)
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", indexHandler)
+	mux.HandleFunc("/", handlers.Homepage())
 	mux.HandleFunc("/login/twitter", handlers.Login(usecases.Login, oauthClient))
 	mux.HandleFunc(
 		"/oauth/twitter/callback",
@@ -67,15 +66,4 @@ func main() {
 		fmt.Sprintf(":%s", c.Port),
 		middleware.Apply(mux, os.Stdout, c),
 	)
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := ioutil.ReadFile("index.html")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(data)
 }
