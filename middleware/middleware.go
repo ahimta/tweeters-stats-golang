@@ -20,16 +20,22 @@ const (
 
 // Apply applies generic middlware to an http.Handler
 // currently it includes:
-// * error-handling middleware
-// * CORS middleware
 // * logging middleware
+// * error-handling middleware
+// * security middleware
+// * CORS middleware
+// * CSRF middleware
 func Apply(
 	handler http.Handler,
 	writer io.Writer,
 	c *config.Config,
 ) http.Handler {
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(w0 http.ResponseWriter, r *http.Request) {
+		// logging middleware
+		startTime := time.Now()
+		w := &responseWriter{w0, 200, 0}
+
 		// error-handling middleware
 		defer func() {
 			r := recover()
@@ -49,13 +55,6 @@ func Apply(
 				http.Error(w, "Internal Error", http.StatusInternalServerError)
 			}
 		}()
-
-		// CORS middleare
-		if c.CorsDomain != "" {
-			w.Header().Set("Access-Control-Allow-Origin", c.CorsDomain)
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-		}
 
 		// logging middleware
 		clientIP := r.RemoteAddr
@@ -77,36 +76,71 @@ func Apply(
 			userAgent = "-"
 		}
 
-		startTime := time.Now()
-		w1 := &responseWriter{w, 200, 0}
+		defer func() {
+			finishTime := time.Now()
+			time := finishTime.UTC()
+			elapsedTime := finishTime.Sub(startTime)
+			timeFormatted := time.Format("02/Jan/2006 03:04:05")
+
+			status := w.status
+			responseBytes := w.responseBytes
+
+			fmt.Fprintf(
+				writer,
+				apacheFormatPattern,
+				clientIP,
+				timeFormatted,
+				r.Method,
+				r.URL,
+				r.Proto,
+				status,
+				responseBytes,
+				referer,
+				userAgent,
+				elapsedTime.Seconds(),
+			)
+		}()
+
+		// Security middleware
+		w.Header().Set("Content-Security-Policy", "default-src 'self' data: maxcdn.bootstrapcdn.com; style-src 'unsafe-inline' maxcdn.bootstrapcdn.com; script-src 'unsafe-inline'")
+		w.Header().Set("Referrer-Header", "same-origin")
+		w.Header().Set("Strict-Transport-Security", "max-age=5184000")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-DNS-Prefetch-Control", "off")
+		w.Header().Set("X-Download-Options", "noopen")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("X-XSS-Protection", "1; mode=block")
+
+		// CORS middleare
+		if c.CorsDomain != "" {
+			w.Header().Set("Access-Control-Allow-Origin", c.CorsDomain)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
+		}
+
+		// CSRF middleware
+		if path := r.URL.Path; !(path == "/" ||
+			path == "/login/twitter" ||
+			path == "/oauth/twitter/callback") {
+
+			if r.Header.Get("X-Requested-With") != "XMLHttpRequest" ||
+				r.Host != "localhost:8080" {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+
+			if !(r.Header.Get("Origin") == "http://localhost:8080" ||
+				r.Header.Get("Referer") == "http://localhost:8080" ||
+				strings.HasPrefix(r.Header.Get("Referer"), "http://localhost:8080/")) {
+				w.WriteHeader(http.StatusForbidden)
+				return
+			}
+		}
 
 		// related to CORS middleware
 		if r.Method != http.MethodOptions {
-			handler.ServeHTTP(w1, r)
+			handler.ServeHTTP(w, r)
 		}
-
-		finishTime := time.Now()
-		time := finishTime.UTC()
-		elapsedTime := finishTime.Sub(startTime)
-		timeFormatted := time.Format("02/Jan/2006 03:04:05")
-
-		status := w1.status
-		responseBytes := w1.responseBytes
-
-		fmt.Fprintf(
-			writer,
-			apacheFormatPattern,
-			clientIP,
-			timeFormatted,
-			r.Method,
-			r.URL,
-			r.Proto,
-			status,
-			responseBytes,
-			referer,
-			userAgent,
-			elapsedTime.Seconds(),
-		)
 	})
 }
 
