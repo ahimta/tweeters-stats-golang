@@ -10,3 +10,8 @@ README.md
 LICENSE
 tmp
 .vscode
+
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars

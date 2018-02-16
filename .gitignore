@@ -1,5 +1,11 @@
 tmp
 vendor
+
 .env
 index.html
 main
+
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
