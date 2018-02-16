@@ -31,6 +31,10 @@ func Apply(
 	c *config.Config,
 ) http.Handler {
 
+	host := c.Host
+	origin := fmt.Sprintf("%s://%s", c.Protocol, host)
+	referrerPrefix := fmt.Sprintf("%s/", origin)
+
 	return http.HandlerFunc(func(w0 http.ResponseWriter, r *http.Request) {
 		// logging middleware
 		startTime := time.Now()
@@ -124,14 +128,14 @@ func Apply(
 			path == "/oauth/twitter/callback") {
 
 			if r.Header.Get("X-Requested-With") != "XMLHttpRequest" ||
-				r.Host != "localhost:8080" {
+				r.Host != host {
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
 
-			if !(r.Header.Get("Origin") == "http://localhost:8080" ||
-				r.Header.Get("Referer") == "http://localhost:8080" ||
-				strings.HasPrefix(r.Header.Get("Referer"), "http://localhost:8080/")) {
+			if !(r.Header.Get("Origin") == origin ||
+				r.Header.Get("Referer") == origin ||
+				strings.HasPrefix(r.Header.Get("Referer"), referrerPrefix)) {
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}

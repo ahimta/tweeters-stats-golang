@@ -120,6 +120,8 @@ func TestOauthTwitter(t *testing.T) {
 		"callbackURL",
 		"80",
 		"/",
+		"localhost",
+		"http",
 		"",
 	)
 

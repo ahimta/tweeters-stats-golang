@@ -20,6 +20,8 @@ func main() {
 		os.Getenv("CALLBACK_URL"),
 		os.Getenv("PORT"),
 		os.Getenv("HOMEPAGE"),
+		os.Getenv("HOST"),
+		os.Getenv("PROTOCOL"),
 		os.Getenv("CORS_DOMAIN"),
 	)
 
@@ -61,7 +63,7 @@ func main() {
 		),
 	)
 
-	fmt.Printf("Server running on http://localhost:%s\n", c.Port)
+	fmt.Printf("Server running on %s://%s:%s\n", c.Protocol, c.Host, c.Port)
 	http.ListenAndServe(
 		fmt.Sprintf(":%s", c.Port),
 		middleware.Apply(mux, os.Stdout, c),

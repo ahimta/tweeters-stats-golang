@@ -12,6 +12,8 @@ func TestNew(t *testing.T) {
 		callbackURL    string
 		port           string
 		homepage       string
+		host           string
+		protocol       string
 		corsDomain     string
 	}
 	tests := []struct {
@@ -22,7 +24,16 @@ func TestNew(t *testing.T) {
 	}{
 		{
 			name: "should return a valid value when all args are provided",
-			args: args{"consumerKey", "consumerSecret", "callbackURL", "8", "/", "d"},
+			args: args{
+				"consumerKey",
+				"consumerSecret",
+				"callbackURL",
+				"8",
+				"/",
+				"d",
+				"h",
+				"p",
+			},
 			want: &Config{
 				"consumerKey",
 				"consumerSecret",
@@ -30,17 +41,30 @@ func TestNew(t *testing.T) {
 				"8",
 				"/",
 				"d",
+				"h",
+				"p",
 			},
 		},
 		{
 			name: "should return a valid value when corsDomain is missing",
-			args: args{"consumerKey", "consumerSecret", "callbackURL", "80", "/", ""},
+			args: args{
+				"consumerKey",
+				"consumerSecret",
+				"callbackURL",
+				"80",
+				"/",
+				"h",
+				"p",
+				"",
+			},
 			want: &Config{
 				"consumerKey",
 				"consumerSecret",
 				"callbackURL",
 				"80",
 				"/",
+				"h",
+				"p",
 				"",
 			},
 		},
@@ -51,6 +75,8 @@ func TestNew(t *testing.T) {
 				"consumerSecret",
 				"callbackURL",
 				"80",
+				"/",
+				"h",
 				"",
 				"",
 			},
@@ -65,6 +91,8 @@ func TestNew(t *testing.T) {
 				tt.args.callbackURL,
 				tt.args.port,
 				tt.args.homepage,
+				tt.args.host,
+				tt.args.protocol,
 				tt.args.corsDomain,
 			)
 			if (err != nil) != tt.wantErr {

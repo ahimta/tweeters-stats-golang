@@ -11,7 +11,11 @@ type Config struct {
 	CallbackURL    string
 	Port           string
 	Homepage       string
-	CorsDomain     string
+
+	Host     string
+	Protocol string
+
+	CorsDomain string
 }
 
 // New blablabla
@@ -21,6 +25,8 @@ func New(
 	callbackURL,
 	port,
 	homepage,
+	host,
+	protocol,
 	corsDomain string) (
 	*Config, error,
 ) {
@@ -29,7 +35,9 @@ func New(
 		consumerSecret == "" ||
 		callbackURL == "" ||
 		port == "" ||
-		homepage == "" {
+		homepage == "" ||
+		host == "" ||
+		protocol == "" {
 		return nil, errors.New("config: a required parameter is missing -_-")
 	}
 
@@ -39,6 +47,10 @@ func New(
 		callbackURL,
 		port,
 		homepage,
+
+		host,
+		protocol,
+
 		corsDomain,
 	}, nil
 }

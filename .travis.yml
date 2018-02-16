@@ -6,6 +6,8 @@ env:
 - CALLBACK_URL=http://localhost:8080/oauth/twitter/callback
 - PORT=8080
 - HOMEPAGE=/
+- HOST=localhost:8080
+- PROTOCOL=http
 
 services:
 - docker
