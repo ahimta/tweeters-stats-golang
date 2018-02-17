@@ -32,6 +32,20 @@
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 
 [[projects]]
+  name = "github.com/newrelic/go-agent"
+  packages = [
+    ".",
+    "internal",
+    "internal/cat",
+    "internal/jsonx",
+    "internal/logger",
+    "internal/sysinfo",
+    "internal/utilization"
+  ]
+  revision = "f5bce3387232559bcbe6a5f8227c4bf508dac1ba"
+  version = "v1.11.0"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
@@ -40,6 +54,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4f089db0f5709134da1feee4949a4a70f260d51ed815df2623ae0da2aea637b3"
+  inputs-digest = "ad8625ef7c5b743fd4b4e6f4998c7dad48ca5c3f9ab80df4c4281fd81b8a3473"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -6,8 +6,6 @@ COPY . /go/src/github.com/Ahimta/tweeters-stats-golang
 WORKDIR /go/src/github.com/Ahimta/tweeters-stats-golang
 
 RUN go get -u github.com/golang/dep/cmd/dep && \
-  go get github.com/newrelic/go-agent && \
-  go get -u github.com/golang/lint/golint && \
   go get github.com/pilu/fresh
 
 RUN dep ensure
