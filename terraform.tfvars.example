@@ -1,0 +1,25 @@
+# AWS related
+region = "eu-west-1"
+
+availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+
+image_id = "ami-880d64f1"
+
+subnets = ["subnet-c3cb3da5", "subnet-361adf7e", "subnet-d6bb888d"]
+
+certificate_arn = "<AWS ACM certificate ARN>"
+
+# Environment variables
+consumer_key = "<your Twitter App consumer key>"
+
+consumer_secret = "<your Twitter App consumer secret>"
+
+callback_url = "https://www.tweeters-stats.com/oauth/twitter/callback"
+
+port = "8080"
+
+homepage = "/"
+
+host = "www.tweeters-stats.com"
+
+protocol = "https"
