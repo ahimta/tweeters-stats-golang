@@ -19,15 +19,15 @@
 
 ## Test
 * `docker build --file Dockerfile.test --tag tweeters-stats-golang-test .`
-* `docker run -it --rm --env-file .env -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-test`
+* `docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-test`
 
 ## Build & Run (development)
 * `docker build --file Dockerfile.dev --tag tweeters-stats-golang-dev .`
-* `docker run -it --rm --env-file .env -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-dev`
+* `docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-dev`
 
 ## Build & Run (production)
 * `docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .`
-* `docker run -it --rm --env-file .env -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-prod`
+* `docker run -it --rm --env-file .env -p 8080:8080 tweeters-stats-golang-prod`
 
 ## Infrastructure (AWS)
 * Make sure you have a default AWS profile configured

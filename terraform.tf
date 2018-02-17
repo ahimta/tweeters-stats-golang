@@ -48,6 +48,10 @@ variable protocol {
   type = "string"
 }
 
+variable new_relic_license_key {
+  type = "string"
+}
+
 provider "aws" {
   version = "~> 1.9"
   region  = "${var.region}"
@@ -177,6 +181,10 @@ resource "aws_ecs_task_definition" "backend" {
   {
     "name": "PROTOCOL",
     "value": "${var.protocol}"
+  },
+  {
+    "name": "NEW_RELIC_LICENSE_KEY",
+    "value": "${var.new_relic_license_key}"
   }
 ]
 }]

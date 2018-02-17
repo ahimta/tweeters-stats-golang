@@ -23,3 +23,5 @@ homepage = "/"
 host = "www.tweeters-stats.com"
 
 protocol = "https"
+
+new_relic_license_key = "<your New Relic license key>"
