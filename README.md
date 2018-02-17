@@ -18,15 +18,16 @@
 * CORS_DOMAIN?: Domain to allow CORS (can useful for development)
 
 ## Test
-* `docker run -it --rm --env-file .env --env HOMEPAGE=/ -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang ./test`
+* `docker build --file Dockerfile.test --tag tweeters-stats-golang-test .`
+* `docker run -it --rm --env-file .env -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-test`
 
 ## Build & Run (development)
-* `docker build --tag tweeters-stats-golang --build-arg livereload=enabled .`
-* `docker run -it --rm --env-file .env --env HOMEPAGE=/ -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang`
+* `docker build --file Dockerfile.dev --tag tweeters-stats-golang-dev .`
+* `docker run -it --rm --env-file .env -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-dev`
 
 ## Build & Run (production)
-* `docker build --tag tweeters-stats-golang --build-arg livereload=disabled .`
-* `docker run -it --rm --env-file .env --env HOMEPAGE=/ -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang`
+* `docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .`
+* `docker run -it --rm --env-file .env -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-prod`
 
 ## Infrastructure (AWS)
 * Make sure you have a default AWS profile configured
@@ -36,9 +37,10 @@
 
 ## Deploy
 * `aws ecr get-login --no-include-email --region eu-west-1 | bash`
-* `docker build --tag tweeters-stats-golang --build-arg livereload=disabled .`
-* `docker tag tweeters-stats-golang:latest <ecr-repo>:latest`
+* `docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .`
+* `docker tag tweeters-stats-golang-prod:latest <ecr-repo>:latest`
 * `docker push <ecr-repo>:latest`
+* `aws update-service --cluster backend --service backend --force-new-deployment`
 
 ## Routes
 * `/`: SPA frontend serving `index.html` (you have to provide your own)
