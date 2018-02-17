@@ -40,7 +40,7 @@
 * `docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .`
 * `docker tag tweeters-stats-golang-prod:latest <ecr-repo>:latest`
 * `docker push <ecr-repo>:latest`
-* `aws update-service --cluster backend --service backend --force-new-deployment`
+* `aws ecs update-service --cluster backend --service backend --force-new-deployment`
 
 ## Routes
 * `/`: SPA frontend serving `index.html` (you have to provide your own)
