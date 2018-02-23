@@ -1,13 +1,7 @@
 sudo: required
 
 env:
-- CONSUMER_KEY=consumerKey
-- CONSUMER_SECRET=consumerSecret
-- CALLBACK_URL=http://localhost:8080/oauth/twitter/callback
-- PORT=8080
-- HOMEPAGE=/
-- HOST=localhost:8080
-- PROTOCOL=http
+- CONSUMER_KEY=consumerKey CONSUMER_SECRET=consumerSecret CALLBACK_URL=http://localhost:8080/oauth/twitter/callback PORT=8080 HOMEPAGE=/ HOST=localhost:8080 PROTOCOL=http
 
 services:
 - docker
