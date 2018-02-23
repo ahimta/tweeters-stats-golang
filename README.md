@@ -1,6 +1,8 @@
 # Tweeters Stats Golang
-[![Build Status](https://travis-ci.org/Ahimta/tweeters-stats-golang.svg?branch=master)](https://travis-ci.org/Ahimta/tweeters-stats-golang)
 [![Go Report Card](https://goreportcard.com/badge/Ahimta/tweeters-stats-golang)](https://goreportcard.com/report/Ahimta/tweeters-stats-golang)
+[![Build Status](https://travis-ci.org/Ahimta/tweeters-stats-golang.svg?branch=master)](https://travis-ci.org/Ahimta/tweeters-stats-golang)
+[![Maintainability](https://api.codeclimate.com/v1/badges/9a3540991baf29bfc53b/maintainability)](https://codeclimate.com/github/Ahimta/tweeters-stats-golang/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/9a3540991baf29bfc53b/test_coverage)](https://codeclimate.com/github/Ahimta/tweeters-stats-golang/test_coverage)
 
 ## Requirements
 * Twitter App (with read-only and login privileges)
