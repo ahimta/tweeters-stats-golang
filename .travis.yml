@@ -20,6 +20,6 @@ after_success:
 - pip install awscli --upgrade --user
 - aws ecr get-login --no-include-email --region eu-west-1 | bash
 - docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .
-- docker tag tweeters-stats-golang-prod:latest $DOCKER_REPO_URL:latest
-- docker push $DOCKER_REPO_URL:latest
-- aws ecs update-service --cluster backend --service backend --force-new-deployment
+- docker tag tweeters-stats-golang-prod:latest $DOCKER_REPO_URL:latest &>/dev/null
+- docker push $DOCKER_REPO_URL:latest &>/dev/null
+- aws ecs update-service --cluster backend --service backend --force-new-deployment &>/dev/null
