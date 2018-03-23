@@ -124,6 +124,7 @@ func Apply(
 
 		// CSRF middleware
 		if path := r.URL.Path; !(path == "/" ||
+			path == "/health-check" ||
 			path == "/login/twitter" ||
 			path == "/oauth/twitter/callback") {
 
