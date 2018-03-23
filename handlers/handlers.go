@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/Ahimta/tweeters-stats-golang/auth"
@@ -31,12 +32,20 @@ type tweetersStatsUsecaseFunc func(
 	[]*entities.TweeterStats, error,
 )
 
-// Homepage blablabla
-func Homepage() http.HandlerFunc {
+// HealthCheck blablabla
+func HealthCheck() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data, err := ioutil.ReadFile("index.html")
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// Homepage blablabla
+func Homepage(indexHTMLPath string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data, err := ioutil.ReadFile(indexHTMLPath)
 
 		if err != nil {
+			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

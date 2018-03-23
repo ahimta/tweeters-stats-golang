@@ -56,7 +56,8 @@ func main() {
 	tweetsService := services.NewTweetsService(oauthClient)
 	mux := http.NewServeMux()
 
-	route(mux, app, "/", handlers.Homepage())
+	route(mux, app, "/health-check", handlers.HealthCheck())
+	route(mux, app, "/", handlers.Homepage("index.html"))
 	route(mux, app, "/login/twitter", handlers.Login(usecases.Login, oauthClient))
 	route(
 		mux,

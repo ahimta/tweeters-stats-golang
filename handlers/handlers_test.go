@@ -16,6 +16,38 @@ import (
 	"github.com/Ahimta/tweeters-stats-golang/usecases"
 )
 
+func TestHealthCheck(t *testing.T) {
+	req, err := http.NewRequest("GET", "/health-check", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := HealthCheck()
+	handler.ServeHTTP(rr, req)
+
+	if rr.Result().StatusCode != 204 {
+		t.Error("Expected status code to be 204")
+	}
+}
+
+func TestHomepage(t *testing.T) {
+	req, err := http.NewRequest("GET", "/health-check", nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := Homepage("../index.html")
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Result().StatusCode; status != 200 {
+		t.Errorf("Expected %v status code to be 200", status)
+	}
+}
+
 func TestLogin(t *testing.T) {
 	t.Run(
 		"should use underlying implementation and redirect to correct URL",
