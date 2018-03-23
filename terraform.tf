@@ -224,6 +224,11 @@ resource "aws_lb_target_group" "backend" {
   port     = 80
   protocol = "HTTP"
   vpc_id   = "${aws_default_vpc.default.id}"
+
+  health_check {
+    path    = "/health-check"
+    matcher = "204"
+  }
 }
 
 resource "aws_lb_listener" "backend" {
