@@ -20,6 +20,7 @@
 - HOST: mostly for CSRF middleware
 - PROTOCOL: mostly for CSRF middleware
 - CORS_DOMAIN?: Domain to allow CORS (can useful for development)
+- NEW_RELIC_LICENSE_KEY?: NewRelic license key
 
 # Build
 
