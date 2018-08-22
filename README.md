@@ -28,12 +28,12 @@
 
 ## Test
 
-`docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= tweeters-stats-golang ./test`
+`docker run -it --rm --env-file .env tweeters-stats-golang ./test`
 
 ## Run (local development)
 
 1. `docker run -it --rm --env-file .env -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang dep ensure`
-2. `docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang fresh`
+2. `docker run -it --rm --env-file .env -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang fresh`
 
 ## Run (production)
 
