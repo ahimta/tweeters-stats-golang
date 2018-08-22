@@ -10,7 +10,7 @@ services:
 - docker
 
 before_script:
-- npm install --global elm
+- npm install --global elm@^0.18.0
 
 script:
 - git clone https://github.com/Ahimta/tweeters-stats-elm.git
@@ -20,4 +20,4 @@ script:
 - cd ../
 - rm -rf tweeters-stats-elm
 - docker build --file Dockerfile --tag tweeters-stats-golang .
-- docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= tweeters-stats-golang ./test
+- docker run -it --rm --env-file .env tweeters-stats-golang ./test
