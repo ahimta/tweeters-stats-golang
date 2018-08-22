@@ -2,36 +2,47 @@
 
 
 [[projects]]
+  digest = "1:1cf61f0228e64d1bfddaa42bfd1f5047ed3626925b9bea69bbcb9168472dae23"
   name = "github.com/cenkalti/backoff"
   packages = ["."]
+  pruneopts = ""
   revision = "61153c768f31ee5f130071d08fc82b85208528de"
   version = "v1.1.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:33bd150678864b580ae00b28db74df74c110a3a0c349ec7e005eb95cd074057f"
   name = "github.com/dghubble/go-twitter"
   packages = ["twitter"]
+  pruneopts = ""
   revision = "c4115fa44a928413e0b857e0eb47376ffde3a61a"
 
 [[projects]]
+  digest = "1:cc7dae0381d73a84417d27cbce4b8b1a16002203eaa4bea46e3d5c41449c5b3a"
   name = "github.com/dghubble/oauth1"
   packages = ["."]
+  pruneopts = ""
   revision = "70562a5920ad9b6ff03ef697c0f90ae569abbd2b"
   version = "v0.4.0"
 
 [[projects]]
+  digest = "1:ee44d4de102276888a69df382c76c3dff0da8c3f5ac5393f3a3d3447a1203fd7"
   name = "github.com/dghubble/sling"
   packages = ["."]
+  pruneopts = ""
   revision = "eb56e89ac5088bebb12eef3cb4b293300f43608b"
   version = "v1.1.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:9abc49f39e3e23e262594bb4fb70abf74c0c99e94f99153f43b143805e850719"
   name = "github.com/google/go-querystring"
   packages = ["query"]
+  pruneopts = ""
   revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 
 [[projects]]
+  digest = "1:9281bd443e42018aa5bb72e08a6c4a0fa548b7168c1d2deda23e6ca5684e4c50"
   name = "github.com/newrelic/go-agent"
   packages = [
     ".",
@@ -40,20 +51,27 @@
     "internal/jsonx",
     "internal/logger",
     "internal/sysinfo",
-    "internal/utilization"
+    "internal/utilization",
   ]
+  pruneopts = ""
   revision = "f5bce3387232559bcbe6a5f8227c4bf508dac1ba"
   version = "v1.11.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:cf18df59978fa61823ae19ca67c1eded2077045f064812b204eeb3ee84e6466d"
   name = "golang.org/x/net"
   packages = ["context"]
+  pruneopts = ""
   revision = "434ec0c7fe3742c984919a691b2018a6e9694425"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ad8625ef7c5b743fd4b4e6f4998c7dad48ca5c3f9ab80df4c4281fd81b8a3473"
+  input-imports = [
+    "github.com/dghubble/go-twitter/twitter",
+    "github.com/dghubble/oauth1",
+    "github.com/newrelic/go-agent",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
