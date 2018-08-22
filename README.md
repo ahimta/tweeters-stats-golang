@@ -31,18 +31,12 @@
 * `docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .`
 * `docker run -it --rm --env-file .env -p 8080:8080 tweeters-stats-golang-prod`
 
-## Infrastructure (AWS)
-* Make sure you have a default AWS profile configured
-* Create `terraform.tfvars` file with Terraform variables
-* `terraform init`
-* `terraform apply`
-
 ## Deploy
-* `aws ecr get-login --no-include-email --region eu-west-1 | bash`
-* `docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .`
-* `docker tag tweeters-stats-golang-prod:latest <ecr-repo>:latest`
-* `docker push <ecr-repo>:latest`
-* `aws ecs update-service --cluster backend --service backend --force-new-deployment`
+1. `heroku login`
+2. `heroku container:login`
+3. `docker tag tweeters-stats-golang-prod registry.heroku.com/tweeters-stats/web`
+4. `docker push registry.heroku.com/tweeters-stats/web`
+5. `heroku container:release --app tweeters-stats web`
 
 ## Routes
 * `/`: SPA frontend serving `index.html` (you have to provide your own)
