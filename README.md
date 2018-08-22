@@ -32,11 +32,7 @@
 `docker run -it --rm --env-file .env -p 8080:8080 tweeters-stats-golang`
 
 ## Deploy
-1. `heroku login`
-2. `heroku container:login`
-3. `docker tag tweeters-stats-golang registry.heroku.com/tweeters-stats/web`
-4. `docker push registry.heroku.com/tweeters-stats/web`
-5. `heroku container:release --app tweeters-stats web`
+`sh deploy.sh`
 
 ## Routes
 * `/`: SPA frontend serving `index.html` (you have to provide your own)
