@@ -5,7 +5,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/9a3540991baf29bfc53b/test_coverage)](https://codeclimate.com/github/Ahimta/tweeters-stats-golang/test_coverage)
 
 ## Requirements
-* Twitter App (with read-only and login privileges)
+* Twitter App (with only read-only permissions and no login privileges)
 * Docker
 
 ## Environment Variables
