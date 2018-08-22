@@ -7,7 +7,6 @@
 ## Requirements
 * Twitter App (with read-only and login privileges)
 * Docker
-* Terraform (for deployment)
 
 ## Environment Variables
 * CONSUMER_KEY: Twitter's consumer key
@@ -19,22 +18,23 @@
 * PROTOCOL: mostly for CSRF middleware
 * CORS_DOMAIN?: Domain to allow CORS (can useful for development)
 
+# Build
+`docker build --file Dockerfile --tag tweeters-stats-golang .`
+
 ## Test
-* `docker build --file Dockerfile.test --tag tweeters-stats-golang-test .`
-* `docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= tweeters-stats-golang-test`
+`docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= tweeters-stats-golang ./test`
 
-## Build & Run (development)
-* `docker build --file Dockerfile.dev --tag tweeters-stats-golang-dev .`
-* `docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang-dev`
+## Run (local development)
+1. `docker run -it --rm --env-file .env -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang dep ensure`
+2. `docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= -p 8080:8080 -v $PWD:/go/src/github.com/Ahimta/tweeters-stats-golang tweeters-stats-golang fresh`
 
-## Build & Run (production)
-* `docker build --file Dockerfile.prod --tag tweeters-stats-golang-prod .`
-* `docker run -it --rm --env-file .env -p 8080:8080 tweeters-stats-golang-prod`
+## Run (production)
+`docker run -it --rm --env-file .env -p 8080:8080 tweeters-stats-golang`
 
 ## Deploy
 1. `heroku login`
 2. `heroku container:login`
-3. `docker tag tweeters-stats-golang-prod registry.heroku.com/tweeters-stats/web`
+3. `docker tag tweeters-stats-golang registry.heroku.com/tweeters-stats/web`
 4. `docker push registry.heroku.com/tweeters-stats/web`
 5. `heroku container:release --app tweeters-stats web`
 
