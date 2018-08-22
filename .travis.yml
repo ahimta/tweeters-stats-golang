@@ -19,5 +19,5 @@ script:
 - elm-make Main.elm --output=../index.html
 - cd ../
 - rm -rf tweeters-stats-elm
-- docker build --file Dockerfile.test --tag tweeters-stats-golang-test .
-- docker run -it --rm --env NEW_RELIC_LICENSE_KEY= tweeters-stats-golang-test
+- docker build --file Dockerfile --tag tweeters-stats-golang .
+- docker run -it --rm --env-file .env --env NEW_RELIC_LICENSE_KEY= tweeters-stats-golang ./test
