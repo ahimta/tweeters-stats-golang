@@ -3,9 +3,6 @@ language: node_js
 node_js:
 - "8.11.4"
 
-env:
-- CONSUMER_KEY=consumerKey CONSUMER_SECRET=consumerSecret CALLBACK_URL=http://localhost:8080/oauth/twitter/callback PORT=8080 HOMEPAGE=/ HOST=localhost:8080 PROTOCOL=http
-
 services:
 - docker
 
@@ -20,4 +17,4 @@ script:
 - cd ../
 - rm -rf tweeters-stats-elm
 - docker build --file Dockerfile --tag tweeters-stats-golang .
-- docker run -it --rm --env-file .env tweeters-stats-golang ./test
+- docker run -it --rm tweeters-stats-golang ./test

@@ -28,7 +28,7 @@
 
 ## Test
 
-`docker run -it --rm --env-file .env tweeters-stats-golang ./test`
+`docker run -it --rm tweeters-stats-golang ./test`
 
 ## Run (local development)
 
